@@ -3,40 +3,45 @@ import styled from 'styled-components';
 import type { CommandPreset } from '../types';
 
 const FormContainer = styled.div`
-  border: 1px solid #666;
-  border-radius: 8px;
-  padding: 1.5rem;
-  background: #1a1a1a;
+  border: 1px solid ${({ theme }) => theme.colors.interactive.border};
+  border-radius: ${({ theme }) => theme.radii.lg};
+  padding: ${({ theme }) => theme.spacing.lg};
+  background: ${({ theme }) => theme.colors.background.surface};
+  color: ${({ theme }) => theme.colors.text.secondary};
 
   h3, h4 {
     margin-top: 0;
-    color: #d4af37;
+    color: ${({ theme }) => theme.colors.primary};
   }
 `;
 
 const Presets = styled.div`
-  margin-bottom: 1.5rem;
+  margin-bottom: ${({ theme }) => theme.spacing.lg};
 `;
 
 const PresetButtons = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
+  gap: ${({ theme }) => theme.spacing.sm};
+  margin-top: ${({ theme }) => theme.spacing.sm};
 `;
 
 const PresetButton = styled.button<{ $selected?: boolean }>`
-  padding: 0.5rem 0.75rem;
-  border: 1px solid #666;
-  background: ${({ $selected }) => ($selected ? '#d4af37' : '#333')};
-  color: ${({ $selected }) => ($selected ? '#000' : 'white')};
-  border-color: ${({ $selected }) => ($selected ? '#d4af37' : '#666')};
-  border-radius: 4px;
+  padding: ${({ theme }) => theme.spacing.sm} 0.75rem;
+  border: 1px solid ${({ theme }) => theme.colors.interactive.border};
+  background: ${({ $selected, theme }) =>
+    $selected ? theme.colors.primary : theme.colors.background.button};
+  color: ${({ $selected, theme }) =>
+    $selected ? '#000' : theme.colors.text.secondary};
+  border-color: ${({ $selected, theme }) =>
+    $selected ? theme.colors.primary : theme.colors.interactive.border};
+  border-radius: ${({ theme }) => theme.radii.base};
   cursor: pointer;
-  font-size: 0.8rem;
+  font-size: ${({ theme }) => theme.typography.sizes.sm};
 
   &:hover {
-    background: ${({ $selected }) => ($selected ? '#c4a147' : '#555')};
+    background: ${({ $selected, theme }) =>
+      $selected ? theme.colors.primaryHover : theme.colors.background.buttonHover};
   }
 
   &:disabled {
@@ -46,26 +51,27 @@ const PresetButton = styled.button<{ $selected?: boolean }>`
 `;
 
 const CommandInput = styled.div`
-  margin-bottom: 1rem;
+  margin-bottom: ${({ theme }) => theme.spacing.md};
 `;
 
 const InputHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.5rem;
+  margin-bottom: ${({ theme }) => theme.spacing.sm};
 
   label {
-    font-weight: bold;
+    font-weight: ${({ theme }) => theme.typography.weights.bold};
+    color: ${({ theme }) => theme.colors.text.primary};
   }
 
   button {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.8rem;
-    border: 1px solid #666;
-    background: #333;
-    color: white;
-    border-radius: 3px;
+    padding: ${({ theme }) => theme.spacing.xs} ${({ theme }) => theme.spacing.sm};
+    font-size: ${({ theme }) => theme.typography.sizes.sm};
+    border: 1px solid ${({ theme }) => theme.colors.interactive.border};
+    background: ${({ theme }) => theme.colors.background.button};
+    color: ${({ theme }) => theme.colors.text.secondary};
+    border-radius: ${({ theme }) => theme.radii.sm};
     cursor: pointer;
   }
 `;
@@ -113,16 +119,18 @@ const CommandHelp = styled.div`
   }
 
   li {
-    padding: 0.25rem 0;
-    border-bottom: 1px solid #333;
-    font-size: 0.9rem;
+    padding: ${({ theme }) => theme.spacing.xs} 0;
+    border-bottom: 1px solid ${({ theme }) => theme.colors.background.surfaceHover};
+    font-size: ${({ theme }) => theme.typography.sizes.base};
+    color: ${({ theme }) => theme.colors.text.secondary};
   }
 
   code {
-    background: #333;
+    background: ${({ theme }) => theme.colors.background.surfaceHover};
+    color: ${({ theme }) => theme.colors.text.primary};
     padding: 0.1rem 0.3rem;
-    border-radius: 3px;
-    font-family: monospace;
+    border-radius: ${({ theme }) => theme.radii.sm};
+    font-family: ${({ theme }) => theme.typography.families.mono};
   }
 `;
 

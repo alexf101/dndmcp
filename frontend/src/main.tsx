@@ -1,17 +1,18 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { createGlobalStyle } from 'styled-components';
+import { createGlobalStyle, ThemeProvider } from 'styled-components';
+import { theme } from './theme';
 import App from './App.tsx';
 
 const GlobalStyle = createGlobalStyle`
   :root {
-    font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+    font-family: ${({ theme }) => theme.typography.families.system};
     line-height: 1.5;
-    font-weight: 400;
+    font-weight: ${({ theme }) => theme.typography.weights.normal};
 
     color-scheme: light dark;
     color: rgba(255, 255, 255, 0.87);
-    background-color: #242424;
+    background-color: ${({ theme }) => theme.colors.background.body};
 
     font-synthesis: none;
     text-rendering: optimizeLegibility;
@@ -20,8 +21,8 @@ const GlobalStyle = createGlobalStyle`
   }
 
   a {
-    font-weight: 500;
-    color: #646cff;
+    font-weight: ${({ theme }) => theme.typography.weights.medium};
+    color: ${({ theme }) => theme.colors.interactive.focus};
     text-decoration: inherit;
   }
   a:hover {
@@ -37,23 +38,23 @@ const GlobalStyle = createGlobalStyle`
   }
 
   h1 {
-    font-size: 3.2em;
+    font-size: ${({ theme }) => theme.typography.sizes.xl};
     line-height: 1.1;
   }
 
   button {
-    border-radius: 8px;
+    border-radius: ${({ theme }) => theme.radii.lg};
     border: 1px solid transparent;
     padding: 0.6em 1.2em;
-    font-size: 1em;
-    font-weight: 500;
+    font-size: ${({ theme }) => theme.typography.sizes.lg};
+    font-weight: ${({ theme }) => theme.typography.weights.medium};
     font-family: inherit;
-    background-color: #1a1a1a;
+    background-color: ${({ theme }) => theme.colors.background.surface};
     cursor: pointer;
     transition: border-color 0.25s;
   }
   button:hover {
-    border-color: #646cff;
+    border-color: ${({ theme }) => theme.colors.interactive.borderHover};
   }
   button:focus,
   button:focus-visible {
@@ -76,7 +77,9 @@ const GlobalStyle = createGlobalStyle`
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <GlobalStyle />
-    <App />
+    <ThemeProvider theme={theme}>
+      <GlobalStyle />
+      <App />
+    </ThemeProvider>
   </StrictMode>,
 )

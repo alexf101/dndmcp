@@ -23,12 +23,13 @@ const StyledTable = styled.table`
     padding: 0.5rem;
     text-align: left;
     border-bottom: 1px solid #444;
+    color: #e0e0e0; // Light text for better contrast
   }
 
   th {
     background: #333;
     font-weight: bold;
-    color: #ccc;
+    color: #f0f0f0; // Even lighter for headers
   }
 `;
 
@@ -62,13 +63,13 @@ const StatusEffect = styled.span`
 `;
 
 const NoEffects = styled.span`
-  color: #888;
+  color: #aaa; // Lighter for better readability
 `;
 
 const CreatureId = styled.td`
   font-family: monospace;
   font-size: 0.7rem;
-  color: #888;
+  color: #aaa; // Lighter for better readability
 `;
 
 interface CreatureTableProps {

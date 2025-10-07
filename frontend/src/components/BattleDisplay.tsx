@@ -18,11 +18,16 @@ const BattleInfo = styled.div`
   flex-direction: column;
   gap: 0.5rem;
   margin-bottom: 1.5rem;
+  color: #e0e0e0; // Light text for better contrast
 `;
 
 const InfoRow = styled.div`
   display: flex;
   gap: 0.5rem;
+
+  strong {
+    color: #f0f0f0; // Even lighter for labels
+  }
 `;
 
 const BattleStateJson = styled.div`
@@ -30,12 +35,13 @@ const BattleStateJson = styled.div`
 
   h3 {
     margin-bottom: 0.5rem;
-    color: #888;
+    color: #bbb; // Lighter for better readability
     font-size: 0.9rem;
   }
 
   pre {
     background: #000;
+    color: #e0e0e0; // Light text for JSON content
     padding: 1rem;
     border-radius: 4px;
     overflow: auto;
