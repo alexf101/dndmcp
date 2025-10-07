@@ -219,20 +219,34 @@ function App() {
     };
 
     const handleExecuteCommand = async (commandJson: string) => {
-        if (!currentBattle) return;
-
+        if (!currentBattle) {
+            // Then the only valid command is CREATE_BATTLE
+            try {
+                const command = JSON.parse(commandJson);
+                if (command.type !== "CREATE_BATTLE") {
+                    setError(
+                        "No battle selected. Please create a battle first.",
+                    );
+                    return;
+                }
+                await handleCreateBattle(command.data.name);
+            } catch (err) {
+                setError(
+                    err instanceof Error
+                        ? err.message
+                        : "Failed to execute command",
+                );
+            }
+            return;
+        }
         try {
             setLoading(true);
             const command = JSON.parse(commandJson);
 
-            let updatedBattle: BattleState;
-
-            if (command.type === "CREATE_BATTLE") {
-                await handleCreateBattle(command.data.name);
-                return;
-            } else {
-                updatedBattle = await executeCommand(currentBattle.id, command);
-            }
+            const updatedBattle: BattleState = await executeCommand(
+                currentBattle.id,
+                command,
+            );
 
             setCurrentBattle(updatedBattle);
             setBattles((prev) =>

@@ -1,10 +1,10 @@
 import type { APIResponse, BattleState, Creature, BattleCommand } from "./types";
 import { getCommandUrl, getCommandMethod, buildCommandBody } from "./types";
 
-const API_BASE = "http://localhost:8083/api";
+const API_BASE = "http://localhost:8083";
 
 export async function createBattle(name: string): Promise<BattleState> {
-    const response = await fetch(`${API_BASE}/battles`, {
+    const response = await fetch(`${API_BASE}/api/battles`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name }),
@@ -15,14 +15,14 @@ export async function createBattle(name: string): Promise<BattleState> {
 }
 
 export async function getBattle(id: string): Promise<BattleState> {
-    const response = await fetch(`${API_BASE}/battles/${id}`);
+    const response = await fetch(`${API_BASE}/api/battles/${id}`);
     const result: APIResponse<BattleState> = await response.json();
     if (!result.success) throw new Error(result.error);
     return result.data!;
 }
 
 export async function getAllBattles(): Promise<BattleState[]> {
-    const response = await fetch(`${API_BASE}/battles`);
+    const response = await fetch(`${API_BASE}/api/battles`);
     const result: APIResponse<BattleState[]> = await response.json();
     if (!result.success) throw new Error(result.error);
     return result.data!;
