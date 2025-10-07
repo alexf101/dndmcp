@@ -1,0 +1,15 @@
+{
+    "tasks": {
+        "dev": "deno run --no-prompt --allow-env --allow-net --allow-read --allow-write --watch src/main.ts",
+        "start": "deno run --allow-net --allow-read --allow-write src/main.ts"
+    },
+    "imports": {
+        "@oak/oak": "jsr:@oak/oak@^17.1.0",
+        "@std/http": "jsr:@std/http@^1.0.8"
+    },
+    "compilerOptions": {
+        "strict": true,
+        "noImplicitAny": true,
+        "noImplicitReturns": true
+    }
+}
