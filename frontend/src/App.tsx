@@ -9,58 +9,58 @@ import CreatureTable from "./components/CreatureTable";
 const AppContainer = styled.div`
     max-width: 1400px;
     margin: 0 auto;
-    padding: 1rem;
-    font-family: system-ui, -apple-system, sans-serif;
+    padding: ${({ theme }) => theme.spacing.md};
+    font-family: ${({ theme }) => theme.typography.families.sans};
 `;
 
 const Header = styled.header`
     display: flex;
     align-items: center;
-    gap: 1rem;
-    margin-bottom: 2rem;
-    padding-bottom: 1rem;
-    border-bottom: 2px solid #333;
+    gap: ${({ theme }) => theme.spacing.md};
+    margin-bottom: ${({ theme }) => theme.spacing.xl};
+    padding-bottom: ${({ theme }) => theme.spacing.md};
+    border-bottom: 2px solid ${({ theme }) => theme.colors.background.surfaceHover};
 
     h1 {
         margin: 0;
-        color: #d4af37;
+        color: ${({ theme }) => theme.colors.primary};
     }
 
     select,
     button {
-        padding: 0.5rem;
-        border: 1px solid #666;
+        padding: ${({ theme }) => theme.spacing.sm};
+        border: 1px solid ${({ theme }) => theme.colors.interactive.border};
         background: #222;
-        color: white;
-        border-radius: 4px;
+        color: ${({ theme }) => theme.colors.text.secondary};
+        border-radius: ${({ theme }) => theme.radii.base};
     }
 `;
 
 const ErrorMessage = styled.div`
-    background: #fee;
-    color: #c00;
-    padding: 1rem;
-    border-radius: 4px;
-    margin-bottom: 1rem;
-    border: 1px solid #fcc;
+    background: ${({ theme }) => theme.colors.error.background};
+    color: ${({ theme }) => theme.colors.error.text};
+    padding: ${({ theme }) => theme.spacing.md};
+    border-radius: ${({ theme }) => theme.radii.base};
+    margin-bottom: ${({ theme }) => theme.spacing.md};
+    border: 1px solid ${({ theme }) => theme.colors.error.border};
 `;
 
 const LoadingMessage = styled.div`
-    background: #eff;
-    color: #06c;
-    padding: 1rem;
-    border-radius: 4px;
-    margin-bottom: 1rem;
-    border: 1px solid #ccf;
+    background: ${({ theme }) => theme.colors.loading.background};
+    color: ${({ theme }) => theme.colors.loading.text};
+    padding: ${({ theme }) => theme.spacing.md};
+    border-radius: ${({ theme }) => theme.radii.base};
+    margin-bottom: ${({ theme }) => theme.spacing.md};
+    border: 1px solid ${({ theme }) => theme.colors.loading.border};
 `;
 
 const MainContent = styled.div`
     display: grid;
     grid-template-columns: 1fr 400px;
-    gap: 2rem;
+    gap: ${({ theme }) => theme.spacing.xl};
     align-items: start;
 
-    @media (max-width: 1000px) {
+    @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
         grid-template-columns: 1fr;
     }
 `;
@@ -68,14 +68,14 @@ const MainContent = styled.div`
 const LeftPanel = styled.div`
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: ${({ theme }) => theme.spacing.xl};
 `;
 
 const RightPanel = styled.div`
     position: sticky;
-    top: 1rem;
+    top: ${({ theme }) => theme.spacing.md};
 
-    @media (max-width: 1000px) {
+    @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
         position: static;
     }
 `;

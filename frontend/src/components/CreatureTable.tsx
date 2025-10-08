@@ -2,74 +2,74 @@ import styled from 'styled-components';
 import type { Creature } from '../types';
 
 const TableContainer = styled.div`
-  border: 1px solid #666;
-  border-radius: 8px;
-  padding: 1.5rem;
-  background: #1a1a1a;
+  border: 1px solid ${({ theme }) => theme.colors.interactive.border};
+  border-radius: ${({ theme }) => theme.radii.lg};
+  padding: ${({ theme }) => theme.spacing.lg};
+  background: ${({ theme }) => theme.colors.background.surface};
 
   h3 {
     margin-top: 0;
-    color: #d4af37;
+    color: ${({ theme }) => theme.colors.primary};
   }
 `;
 
 const StyledTable = styled.table`
   width: 100%;
   border-collapse: collapse;
-  margin-top: 1rem;
+  margin-top: ${({ theme }) => theme.spacing.md};
 
   th,
   td {
-    padding: 0.5rem;
+    padding: ${({ theme }) => theme.spacing.sm};
     text-align: left;
-    border-bottom: 1px solid #444;
-    color: #e0e0e0; // Light text for better contrast
+    border-bottom: 1px solid ${({ theme }) => theme.colors.interactive.border};
+    color: ${({ theme }) => theme.colors.text.secondary};
   }
 
   th {
-    background: #333;
-    font-weight: bold;
-    color: #f0f0f0; // Even lighter for headers
+    background: ${({ theme }) => theme.colors.background.surfaceHover};
+    font-weight: ${({ theme }) => theme.typography.weights.bold};
+    color: ${({ theme }) => theme.colors.text.primary};
   }
 `;
 
 const CreatureRow = styled.tr<{ $isCurrentTurn?: boolean }>`
-  ${({ $isCurrentTurn }) =>
+  ${({ $isCurrentTurn, theme }) =>
     $isCurrentTurn &&
     `
-    background: #1a3d1a;
-    border-left: 3px solid #4CAF50;
+    background: ${theme.colors.currentTurn.background};
+    border-left: 3px solid ${theme.colors.currentTurn.border};
   `}
 `;
 
 const HPSpan = styled.span<{ $isDead?: boolean; $isCritical?: boolean; $isWounded?: boolean }>`
-  ${({ $isDead }) => $isDead && 'color: #f44336; text-decoration: line-through;'}
-  ${({ $isCritical }) => $isCritical && 'color: #ff9800; font-weight: bold;'}
-  ${({ $isWounded }) => $isWounded && 'color: #ffeb3b;'}
+  ${({ $isDead, theme }) => $isDead && `color: ${theme.colors.status.danger}; text-decoration: line-through;`}
+  ${({ $isCritical, theme }) => $isCritical && `color: ${theme.colors.status.warning}; font-weight: ${theme.typography.weights.bold};`}
+  ${({ $isWounded, theme }) => $isWounded && `color: ${theme.colors.status.warningBg};`}
 `;
 
 const StatusEffects = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 0.25rem;
+  gap: ${({ theme }) => theme.spacing.xs};
 `;
 
 const StatusEffect = styled.span`
-  background: #444;
-  color: #fff;
+  background: ${({ theme }) => theme.colors.interactive.border};
+  color: ${({ theme }) => theme.colors.text.primary};
   padding: 0.1rem 0.3rem;
-  border-radius: 3px;
-  font-size: 0.8rem;
+  border-radius: ${({ theme }) => theme.radii.sm};
+  font-size: ${({ theme }) => theme.typography.sizes.sm};
 `;
 
 const NoEffects = styled.span`
-  color: #aaa; // Lighter for better readability
+  color: ${({ theme }) => theme.colors.text.quaternary};
 `;
 
 const CreatureId = styled.td`
-  font-family: monospace;
-  font-size: 0.7rem;
-  color: #aaa; // Lighter for better readability
+  font-family: ${({ theme }) => theme.typography.families.mono};
+  font-size: ${({ theme }) => theme.typography.sizes.xs};
+  color: ${({ theme }) => theme.colors.text.quaternary};
 `;
 
 interface CreatureTableProps {

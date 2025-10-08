@@ -2,51 +2,51 @@ import styled from 'styled-components';
 import type { BattleState } from '../types';
 
 const BattleContainer = styled.div`
-  border: 1px solid #666;
-  border-radius: 8px;
-  padding: 1.5rem;
-  background: #1a1a1a;
+  border: 1px solid ${({ theme }) => theme.colors.interactive.border};
+  border-radius: ${({ theme }) => theme.radii.lg};
+  padding: ${({ theme }) => theme.spacing.lg};
+  background: ${({ theme }) => theme.colors.background.surface};
 
   h2 {
     margin-top: 0;
-    color: #d4af37;
+    color: ${({ theme }) => theme.colors.primary};
   }
 `;
 
 const BattleInfo = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
-  color: #e0e0e0; // Light text for better contrast
+  gap: ${({ theme }) => theme.spacing.sm};
+  margin-bottom: ${({ theme }) => theme.spacing.lg};
+  color: ${({ theme }) => theme.colors.text.secondary};
 `;
 
 const InfoRow = styled.div`
   display: flex;
-  gap: 0.5rem;
+  gap: ${({ theme }) => theme.spacing.sm};
 
   strong {
-    color: #f0f0f0; // Even lighter for labels
+    color: ${({ theme }) => theme.colors.text.primary};
   }
 `;
 
 const BattleStateJson = styled.div`
-  margin-top: 1.5rem;
+  margin-top: ${({ theme }) => theme.spacing.lg};
 
   h3 {
-    margin-bottom: 0.5rem;
-    color: #bbb; // Lighter for better readability
-    font-size: 0.9rem;
+    margin-bottom: ${({ theme }) => theme.spacing.sm};
+    color: ${({ theme }) => theme.colors.text.tertiary};
+    font-size: ${({ theme }) => theme.typography.sizes.base};
   }
 
   pre {
-    background: #000;
-    color: #e0e0e0; // Light text for JSON content
-    padding: 1rem;
-    border-radius: 4px;
+    background: ${({ theme }) => theme.colors.background.input};
+    color: ${({ theme }) => theme.colors.text.secondary};
+    padding: ${({ theme }) => theme.spacing.md};
+    border-radius: ${({ theme }) => theme.radii.base};
     overflow: auto;
     max-height: 300px;
-    font-size: 0.8rem;
+    font-size: ${({ theme }) => theme.typography.sizes.sm};
     text-align: left;
   }
 `;
