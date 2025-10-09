@@ -16,18 +16,44 @@ const SearchContainer = styled.div`
   }
 `;
 
+const SearchRow = styled.div`
+  display: flex;
+  gap: ${({ theme }) => theme.spacing.sm};
+  margin-bottom: ${({ theme }) => theme.spacing.md};
+`;
+
 const SearchInput = styled.input`
-  width: 100%;
+  flex: 1;
   padding: ${({ theme }) => theme.spacing.sm};
   border: 1px solid ${({ theme }) => theme.colors.interactive.border};
   border-radius: ${({ theme }) => theme.radii.base};
   background: ${({ theme }) => theme.colors.background.input};
   color: ${({ theme }) => theme.colors.text.primary};
-  margin-bottom: ${({ theme }) => theme.spacing.md};
 
   &:focus {
     outline: none;
     border-color: ${({ theme }) => theme.colors.primary};
+  }
+`;
+
+const ShowAllButton = styled.button`
+  padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
+  background: ${({ theme }) => theme.colors.background.input};
+  color: ${({ theme }) => theme.colors.text.secondary};
+  border: 1px solid ${({ theme }) => theme.colors.interactive.border};
+  border-radius: ${({ theme }) => theme.radii.base};
+  cursor: pointer;
+  font-size: ${({ theme }) => theme.typography.sizes.sm};
+  white-space: nowrap;
+
+  &:hover {
+    background: ${({ theme }) => theme.colors.background.surfaceHover};
+    color: ${({ theme }) => theme.colors.text.primary};
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
   }
 `;
 
@@ -116,10 +142,12 @@ export default function CampaignCreatureSearch({
   const [creatures, setCreatures] = useState<CampaignCreature[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
     const searchCreatures = async () => {
-      if (searchQuery.trim().length < 2) {
+      // If we're not showing all and the query is too short, clear results
+      if (!showAll && searchQuery.trim().length < 2) {
         setCreatures([]);
         return;
       }
@@ -127,7 +155,9 @@ export default function CampaignCreatureSearch({
       try {
         setLoading(true);
         setError(null);
-        const results = await searchCampaignCreatures(searchQuery.trim());
+        // For "show all", we use an empty string which should match everything
+        const queryToUse = showAll ? '' : searchQuery.trim();
+        const results = await searchCampaignCreatures(queryToUse);
         setCreatures(results);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Search failed');
@@ -139,7 +169,19 @@ export default function CampaignCreatureSearch({
 
     const debounceTimeout = setTimeout(searchCreatures, 300);
     return () => clearTimeout(debounceTimeout);
-  }, [searchQuery]);
+  }, [searchQuery, showAll]);
+
+  const handleShowAll = () => {
+    setShowAll(true);
+    setSearchQuery(''); // Clear search when showing all
+  };
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+    if (showAll && e.target.value.trim().length > 0) {
+      setShowAll(false); // Exit "show all" mode when user starts typing
+    }
+  };
 
   const handleAddCreature = async (campaignCreature: CampaignCreature) => {
     if (!currentBattle) return;
@@ -167,13 +209,21 @@ export default function CampaignCreatureSearch({
     <SearchContainer>
       <h3>🏛️ Add from Campaign</h3>
 
-      <SearchInput
-        type="text"
-        placeholder="Search for creatures..."
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-        disabled={disabled || !currentBattle}
-      />
+      <SearchRow>
+        <SearchInput
+          type="text"
+          placeholder={showAll ? "Showing all creatures..." : "Search for creatures..."}
+          value={searchQuery}
+          onChange={handleSearchChange}
+          disabled={disabled || !currentBattle}
+        />
+        <ShowAllButton
+          onClick={handleShowAll}
+          disabled={disabled || !currentBattle || showAll}
+        >
+          Show All
+        </ShowAllButton>
+      </SearchRow>
 
       {error && (
         <NoResults style={{ color: 'red' }}>
@@ -185,8 +235,13 @@ export default function CampaignCreatureSearch({
         <NoResults>⏳ Searching...</NoResults>
       )}
 
-      {!loading && !error && searchQuery.trim().length >= 2 && creatures.length === 0 && (
-        <NoResults>No creatures found for "{searchQuery}"</NoResults>
+      {!loading && !error && (showAll || searchQuery.trim().length >= 2) && creatures.length === 0 && (
+        <NoResults>
+          {showAll
+            ? "No creatures available in campaigns"
+            : `No creatures found for "${searchQuery}"`
+          }
+        </NoResults>
       )}
 
       <CreatureList>
