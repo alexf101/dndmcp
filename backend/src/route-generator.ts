@@ -1,8 +1,9 @@
 import { Router } from "@oak/oak";
 import { BattleStore, HandlerFunction } from "./battle-store.ts";
-import { APIResponse, ROUTE_CONFIGS, CommandType } from "./types.ts";
+import { CampaignStore } from "./campaign-store.ts";
+import { APIResponse, ROUTE_CONFIGS, CommandType, CampaignCommandType } from "./types.ts";
 
-export function generateRoutes(battleStore: BattleStore): Router {
+export function generateRoutes(battleStore: BattleStore, campaignStore: CampaignStore): Router {
     const router = new Router();
 
     // Generate static CRUD routes
@@ -13,7 +14,7 @@ export function generateRoutes(battleStore: BattleStore): Router {
 
     router.post("/api/battles", async (ctx) => {
         const body = await ctx.request.body.json();
-        const { name } = body;
+        const { name, mode, mapSize, sceneDescription } = body;
 
         if (!name) {
             ctx.response.status = 400;
@@ -24,7 +25,7 @@ export function generateRoutes(battleStore: BattleStore): Router {
             return;
         }
 
-        const battle = battleStore.createBattle(name);
+        const battle = battleStore.createBattle(name, mode, mapSize, sceneDescription);
         ctx.response.body = { success: true, data: battle } as APIResponse;
     });
 
@@ -137,6 +138,136 @@ export function generateRoutes(battleStore: BattleStore): Router {
         });
     }
 
+    // === Campaign Management Routes ===
+
+    router.get("/api/campaigns", (ctx) => {
+        const campaigns = campaignStore.getAllCampaigns();
+        ctx.response.body = { success: true, data: campaigns } as APIResponse;
+    });
+
+    router.post("/api/campaigns", async (ctx) => {
+        const body = await ctx.request.body.json();
+        const { name, description } = body;
+
+        if (!name) {
+            ctx.response.status = 400;
+            ctx.response.body = {
+                success: false,
+                error: "Campaign name is required",
+            } as APIResponse;
+            return;
+        }
+
+        const campaign = campaignStore.createCampaign(name, description);
+        ctx.response.body = { success: true, data: campaign } as APIResponse;
+    });
+
+    router.get("/api/campaigns/:id", (ctx) => {
+        const { id } = ctx.params;
+        const campaign = campaignStore.getCampaign(id);
+
+        if (!campaign) {
+            ctx.response.status = 404;
+            ctx.response.body = {
+                success: false,
+                error: "Campaign not found",
+            } as APIResponse;
+            return;
+        }
+
+        ctx.response.body = { success: true, data: campaign } as APIResponse;
+    });
+
+    router.put("/api/campaigns/:campaignId", async (ctx) => {
+        const { campaignId } = ctx.params;
+        const body = await ctx.request.body.json();
+        const { name, description } = body;
+
+        const campaign = campaignStore.updateCampaign(campaignId, { name, description });
+
+        if (!campaign) {
+            ctx.response.status = 404;
+            ctx.response.body = {
+                success: false,
+                error: "Campaign not found",
+            } as APIResponse;
+            return;
+        }
+
+        ctx.response.body = { success: true, data: campaign } as APIResponse;
+    });
+
+    router.delete("/api/campaigns/:campaignId", (ctx) => {
+        const { campaignId } = ctx.params;
+
+        try {
+            const success = campaignStore.deleteCampaign(campaignId);
+
+            if (!success) {
+                ctx.response.status = 404;
+                ctx.response.body = {
+                    success: false,
+                    error: "Campaign not found",
+                } as APIResponse;
+                return;
+            }
+
+            ctx.response.body = { success: true } as APIResponse;
+        } catch (error) {
+            ctx.response.status = 400;
+            ctx.response.body = {
+                success: false,
+                error: error instanceof Error ? error.message : "Failed to delete campaign",
+            } as APIResponse;
+        }
+    });
+
+    // Add creature from campaign to battle
+    router.post("/api/battles/:battleId/creatures/from-campaign/:campaignCreatureId", async (ctx) => {
+        const { battleId, campaignCreatureId } = ctx.params;
+
+        try {
+            const body = await ctx.request.body.json().catch(() => ({}));
+            const { position } = body;
+
+            const battle = battleStore.addCreatureFromCampaign(battleId, campaignCreatureId, position);
+
+            if (!battle) {
+                ctx.response.status = 404;
+                ctx.response.body = {
+                    success: false,
+                    error: "Battle or campaign creature not found",
+                } as APIResponse;
+                return;
+            }
+
+            ctx.response.body = { success: true, data: battle } as APIResponse;
+        } catch (error) {
+            ctx.response.status = 400;
+            ctx.response.body = {
+                success: false,
+                error: error instanceof Error ? error.message : "Failed to add creature from campaign",
+            } as APIResponse;
+        }
+    });
+
+    // Search endpoints
+    router.get("/api/campaigns/creatures/search", (ctx) => {
+        const query = ctx.request.url.searchParams.get("q") || "";
+        const campaignId = ctx.request.url.searchParams.get("campaignId") || undefined;
+
+        const results = campaignStore.searchCreatures(query, campaignId);
+        ctx.response.body = { success: true, data: results } as APIResponse;
+    });
+
+    router.get("/api/campaigns/maps/search", (ctx) => {
+        const query = ctx.request.url.searchParams.get("q") || "";
+        const campaignId = ctx.request.url.searchParams.get("campaignId") || undefined;
+
+        const results = campaignStore.searchMaps(query, campaignId);
+        ctx.response.body = { success: true, data: results } as APIResponse;
+    });
+
     return router;
 }
 
@@ -157,12 +288,19 @@ function getNotFoundMessage(commandType: CommandType): string {
             return "Battle not found";
         case "UPDATE_CREATURE":
         case "REMOVE_CREATURE":
+        case "MOVE_CREATURE":
             return "Battle or creature not found";
         case "NEXT_TURN":
         case "START_BATTLE":
             return "Battle not found";
         case "UNDO":
             return "Battle not found or no actions to undo";
+        case "SET_TERRAIN":
+        case "TOGGLE_DOOR":
+            return "Battle not found or not a grid-based battle";
+        case "UPDATE_SCENE_DESCRIPTION":
+        case "UPDATE_CREATURE_POSITIONS":
+            return "Battle not found";
         default:
             return "Resource not found";
     }

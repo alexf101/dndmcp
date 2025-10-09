@@ -1,7 +1,7 @@
-import type { APIResponse, BattleState, Creature, BattleCommand } from "./types";
+import type { APIResponse, BattleState, Creature, BattleCommand, Campaign, CampaignCreature } from "./types";
 import { getCommandUrl, getCommandMethod, buildCommandBody } from "./types";
 
-const API_BASE = "http://localhost:8083";
+const API_BASE = "http://localhost:8000";
 
 export async function createBattle(name: string): Promise<BattleState> {
     const response = await fetch(`${API_BASE}/api/battles`, {
@@ -75,6 +75,42 @@ export async function executeCommand(
         ...(body && { body }),
     });
 
+    const result: APIResponse<BattleState> = await response.json();
+    if (!result.success) throw new Error(result.error);
+    return result.data!;
+}
+
+// Campaign API functions
+export async function getAllCampaigns(): Promise<Campaign[]> {
+    const response = await fetch(`${API_BASE}/api/campaigns`);
+    const result: APIResponse<Campaign[]> = await response.json();
+    if (!result.success) throw new Error(result.error);
+    return result.data!;
+}
+
+export async function searchCampaignCreatures(query: string, campaignId?: string): Promise<CampaignCreature[]> {
+    const params = new URLSearchParams({ q: query });
+    if (campaignId) params.append('campaignId', campaignId);
+
+    const response = await fetch(`${API_BASE}/api/campaigns/creatures/search?${params}`);
+    const result: APIResponse<CampaignCreature[]> = await response.json();
+    if (!result.success) throw new Error(result.error);
+    return result.data!;
+}
+
+export async function addCreatureFromCampaign(
+    battleId: string,
+    campaignCreatureId: string,
+    position?: { x: number; y: number }
+): Promise<BattleState> {
+    const response = await fetch(
+        `${API_BASE}/api/battles/${battleId}/creatures/from-campaign/${campaignCreatureId}`,
+        {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ position }),
+        }
+    );
     const result: APIResponse<BattleState> = await response.json();
     if (!result.success) throw new Error(result.error);
     return result.data!;

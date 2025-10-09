@@ -1,0 +1,1412 @@
+{
+  "campaigns": [
+    {
+      "id": "ec6549e8-ef55-4649-bd90-ead77cef9d7e",
+      "name": "Default Campaign",
+      "description": "Automatically managed default campaign for all created content",
+      "isDefault": true,
+      "creatures": [
+        {
+          "id": "0c0c1e74-04ec-4e33-8b3e-dd40603c0571",
+          "name": "Young Red Dragon",
+          "description": "From battle: Dragons Lair",
+          "template": {
+            "name": "Young Red Dragon",
+            "hp": 178,
+            "maxHp": 178,
+            "ac": 18,
+            "initiative": 10,
+            "stats": {
+              "str": 23,
+              "dex": 10,
+              "con": 21,
+              "int": 14,
+              "wis": 11,
+              "cha": 19
+            },
+            "statusEffects": [],
+            "size": "Large",
+            "isPlayer": false
+          },
+          "createdAt": 1759967982521,
+          "usageCount": 2,
+          "lastUsed": 1759968216992
+        },
+        {
+          "id": "47c7ae3f-7cb8-4691-a1b1-77b9b19366c3",
+          "name": "Brave Knight",
+          "description": "From battle: Dragons Lair",
+          "template": {
+            "name": "Brave Knight",
+            "hp": 84,
+            "maxHp": 84,
+            "ac": 20,
+            "initiative": 15,
+            "stats": {
+              "str": 20,
+              "dex": 15,
+              "con": 16,
+              "int": 10,
+              "wis": 14,
+              "cha": 13
+            },
+            "statusEffects": [],
+            "size": "Medium",
+            "isPlayer": true
+          },
+          "createdAt": 1759967997159,
+          "usageCount": 1
+        },
+        {
+          "id": "aa71448f-6c49-4fb1-adc5-45a39b510563",
+          "name": "Ancient Red Dragon",
+          "description": "From battle: Dragons Lair Demo",
+          "template": {
+            "name": "Ancient Red Dragon",
+            "hp": 546,
+            "maxHp": 546,
+            "ac": 22,
+            "initiative": 10,
+            "stats": {
+              "str": 30,
+              "dex": 10,
+              "con": 29,
+              "int": 18,
+              "wis": 15,
+              "cha": 23
+            },
+            "statusEffects": [],
+            "size": "Large",
+            "isPlayer": false
+          },
+          "createdAt": 1759968198784,
+          "usageCount": 1
+        },
+        {
+          "id": "6f68c978-7aa4-424c-a162-c3aa7217c697",
+          "name": "Sir Galahad",
+          "description": "From battle: Dragons Lair Demo",
+          "template": {
+            "name": "Sir Galahad",
+            "hp": 84,
+            "maxHp": 84,
+            "ac": 20,
+            "initiative": 15,
+            "stats": {
+              "str": 20,
+              "dex": 15,
+              "con": 16,
+              "int": 10,
+              "wis": 14,
+              "cha": 13
+            },
+            "statusEffects": [],
+            "size": "Medium",
+            "isPlayer": true
+          },
+          "createdAt": 1759968198791,
+          "usageCount": 1
+        }
+      ],
+      "maps": [
+        {
+          "id": "58216e6e-98eb-4e21-bf30-89d3fbf5dcec",
+          "name": "Battle map for Dragons Lair",
+          "description": "15x10 map from battle: Dragons Lair",
+          "template": {
+            "width": 15,
+            "height": 10,
+            "cells": [
+              [
+                {
+                  "x": 0,
+                  "y": 0,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 1,
+                  "y": 0,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 2,
+                  "y": 0,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 3,
+                  "y": 0,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 4,
+                  "y": 0,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 5,
+                  "y": 0,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 6,
+                  "y": 0,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 7,
+                  "y": 0,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 8,
+                  "y": 0,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 9,
+                  "y": 0,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 10,
+                  "y": 0,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 11,
+                  "y": 0,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 12,
+                  "y": 0,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 13,
+                  "y": 0,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 14,
+                  "y": 0,
+                  "terrain": "Empty"
+                }
+              ],
+              [
+                {
+                  "x": 0,
+                  "y": 1,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 1,
+                  "y": 1,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 2,
+                  "y": 1,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 3,
+                  "y": 1,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 4,
+                  "y": 1,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 5,
+                  "y": 1,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 6,
+                  "y": 1,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 7,
+                  "y": 1,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 8,
+                  "y": 1,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 9,
+                  "y": 1,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 10,
+                  "y": 1,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 11,
+                  "y": 1,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 12,
+                  "y": 1,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 13,
+                  "y": 1,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 14,
+                  "y": 1,
+                  "terrain": "Empty"
+                }
+              ],
+              [
+                {
+                  "x": 0,
+                  "y": 2,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 1,
+                  "y": 2,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 2,
+                  "y": 2,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 3,
+                  "y": 2,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 4,
+                  "y": 2,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 5,
+                  "y": 2,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 6,
+                  "y": 2,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 7,
+                  "y": 2,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 8,
+                  "y": 2,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 9,
+                  "y": 2,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 10,
+                  "y": 2,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 11,
+                  "y": 2,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 12,
+                  "y": 2,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 13,
+                  "y": 2,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 14,
+                  "y": 2,
+                  "terrain": "Empty"
+                }
+              ],
+              [
+                {
+                  "x": 0,
+                  "y": 3,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 1,
+                  "y": 3,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 2,
+                  "y": 3,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 3,
+                  "y": 3,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 4,
+                  "y": 3,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 5,
+                  "y": 3,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 6,
+                  "y": 3,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 7,
+                  "y": 3,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 8,
+                  "y": 3,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 9,
+                  "y": 3,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 10,
+                  "y": 3,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 11,
+                  "y": 3,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 12,
+                  "y": 3,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 13,
+                  "y": 3,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 14,
+                  "y": 3,
+                  "terrain": "Empty"
+                }
+              ],
+              [
+                {
+                  "x": 0,
+                  "y": 4,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 1,
+                  "y": 4,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 2,
+                  "y": 4,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 3,
+                  "y": 4,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 4,
+                  "y": 4,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 5,
+                  "y": 4,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 6,
+                  "y": 4,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 7,
+                  "y": 4,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 8,
+                  "y": 4,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 9,
+                  "y": 4,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 10,
+                  "y": 4,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 11,
+                  "y": 4,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 12,
+                  "y": 4,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 13,
+                  "y": 4,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 14,
+                  "y": 4,
+                  "terrain": "Empty"
+                }
+              ],
+              [
+                {
+                  "x": 0,
+                  "y": 5,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 1,
+                  "y": 5,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 2,
+                  "y": 5,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 3,
+                  "y": 5,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 4,
+                  "y": 5,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 5,
+                  "y": 5,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 6,
+                  "y": 5,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 7,
+                  "y": 5,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 8,
+                  "y": 5,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 9,
+                  "y": 5,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 10,
+                  "y": 5,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 11,
+                  "y": 5,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 12,
+                  "y": 5,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 13,
+                  "y": 5,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 14,
+                  "y": 5,
+                  "terrain": "Empty"
+                }
+              ],
+              [
+                {
+                  "x": 0,
+                  "y": 6,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 1,
+                  "y": 6,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 2,
+                  "y": 6,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 3,
+                  "y": 6,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 4,
+                  "y": 6,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 5,
+                  "y": 6,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 6,
+                  "y": 6,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 7,
+                  "y": 6,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 8,
+                  "y": 6,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 9,
+                  "y": 6,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 10,
+                  "y": 6,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 11,
+                  "y": 6,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 12,
+                  "y": 6,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 13,
+                  "y": 6,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 14,
+                  "y": 6,
+                  "terrain": "Empty"
+                }
+              ],
+              [
+                {
+                  "x": 0,
+                  "y": 7,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 1,
+                  "y": 7,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 2,
+                  "y": 7,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 3,
+                  "y": 7,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 4,
+                  "y": 7,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 5,
+                  "y": 7,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 6,
+                  "y": 7,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 7,
+                  "y": 7,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 8,
+                  "y": 7,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 9,
+                  "y": 7,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 10,
+                  "y": 7,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 11,
+                  "y": 7,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 12,
+                  "y": 7,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 13,
+                  "y": 7,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 14,
+                  "y": 7,
+                  "terrain": "Empty"
+                }
+              ],
+              [
+                {
+                  "x": 0,
+                  "y": 8,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 1,
+                  "y": 8,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 2,
+                  "y": 8,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 3,
+                  "y": 8,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 4,
+                  "y": 8,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 5,
+                  "y": 8,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 6,
+                  "y": 8,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 7,
+                  "y": 8,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 8,
+                  "y": 8,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 9,
+                  "y": 8,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 10,
+                  "y": 8,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 11,
+                  "y": 8,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 12,
+                  "y": 8,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 13,
+                  "y": 8,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 14,
+                  "y": 8,
+                  "terrain": "Empty"
+                }
+              ],
+              [
+                {
+                  "x": 0,
+                  "y": 9,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 1,
+                  "y": 9,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 2,
+                  "y": 9,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 3,
+                  "y": 9,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 4,
+                  "y": 9,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 5,
+                  "y": 9,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 6,
+                  "y": 9,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 7,
+                  "y": 9,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 8,
+                  "y": 9,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 9,
+                  "y": 9,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 10,
+                  "y": 9,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 11,
+                  "y": 9,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 12,
+                  "y": 9,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 13,
+                  "y": 9,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 14,
+                  "y": 9,
+                  "terrain": "Empty"
+                }
+              ]
+            ],
+            "description": "Battle map for Dragons Lair"
+          },
+          "createdAt": 1759967957066,
+          "usageCount": 1
+        },
+        {
+          "id": "cd301a69-71c7-4158-883e-44c421834b29",
+          "name": "Battle map for Dragons Lair Demo",
+          "description": "12x8 map from battle: Dragons Lair Demo",
+          "template": {
+            "width": 12,
+            "height": 8,
+            "cells": [
+              [
+                {
+                  "x": 0,
+                  "y": 0,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 1,
+                  "y": 0,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 2,
+                  "y": 0,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 3,
+                  "y": 0,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 4,
+                  "y": 0,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 5,
+                  "y": 0,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 6,
+                  "y": 0,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 7,
+                  "y": 0,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 8,
+                  "y": 0,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 9,
+                  "y": 0,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 10,
+                  "y": 0,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 11,
+                  "y": 0,
+                  "terrain": "Empty"
+                }
+              ],
+              [
+                {
+                  "x": 0,
+                  "y": 1,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 1,
+                  "y": 1,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 2,
+                  "y": 1,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 3,
+                  "y": 1,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 4,
+                  "y": 1,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 5,
+                  "y": 1,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 6,
+                  "y": 1,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 7,
+                  "y": 1,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 8,
+                  "y": 1,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 9,
+                  "y": 1,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 10,
+                  "y": 1,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 11,
+                  "y": 1,
+                  "terrain": "Empty"
+                }
+              ],
+              [
+                {
+                  "x": 0,
+                  "y": 2,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 1,
+                  "y": 2,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 2,
+                  "y": 2,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 3,
+                  "y": 2,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 4,
+                  "y": 2,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 5,
+                  "y": 2,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 6,
+                  "y": 2,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 7,
+                  "y": 2,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 8,
+                  "y": 2,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 9,
+                  "y": 2,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 10,
+                  "y": 2,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 11,
+                  "y": 2,
+                  "terrain": "Empty"
+                }
+              ],
+              [
+                {
+                  "x": 0,
+                  "y": 3,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 1,
+                  "y": 3,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 2,
+                  "y": 3,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 3,
+                  "y": 3,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 4,
+                  "y": 3,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 5,
+                  "y": 3,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 6,
+                  "y": 3,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 7,
+                  "y": 3,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 8,
+                  "y": 3,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 9,
+                  "y": 3,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 10,
+                  "y": 3,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 11,
+                  "y": 3,
+                  "terrain": "Empty"
+                }
+              ],
+              [
+                {
+                  "x": 0,
+                  "y": 4,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 1,
+                  "y": 4,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 2,
+                  "y": 4,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 3,
+                  "y": 4,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 4,
+                  "y": 4,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 5,
+                  "y": 4,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 6,
+                  "y": 4,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 7,
+                  "y": 4,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 8,
+                  "y": 4,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 9,
+                  "y": 4,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 10,
+                  "y": 4,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 11,
+                  "y": 4,
+                  "terrain": "Empty"
+                }
+              ],
+              [
+                {
+                  "x": 0,
+                  "y": 5,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 1,
+                  "y": 5,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 2,
+                  "y": 5,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 3,
+                  "y": 5,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 4,
+                  "y": 5,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 5,
+                  "y": 5,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 6,
+                  "y": 5,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 7,
+                  "y": 5,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 8,
+                  "y": 5,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 9,
+                  "y": 5,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 10,
+                  "y": 5,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 11,
+                  "y": 5,
+                  "terrain": "Empty"
+                }
+              ],
+              [
+                {
+                  "x": 0,
+                  "y": 6,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 1,
+                  "y": 6,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 2,
+                  "y": 6,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 3,
+                  "y": 6,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 4,
+                  "y": 6,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 5,
+                  "y": 6,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 6,
+                  "y": 6,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 7,
+                  "y": 6,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 8,
+                  "y": 6,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 9,
+                  "y": 6,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 10,
+                  "y": 6,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 11,
+                  "y": 6,
+                  "terrain": "Empty"
+                }
+              ],
+              [
+                {
+                  "x": 0,
+                  "y": 7,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 1,
+                  "y": 7,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 2,
+                  "y": 7,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 3,
+                  "y": 7,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 4,
+                  "y": 7,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 5,
+                  "y": 7,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 6,
+                  "y": 7,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 7,
+                  "y": 7,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 8,
+                  "y": 7,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 9,
+                  "y": 7,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 10,
+                  "y": 7,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 11,
+                  "y": 7,
+                  "terrain": "Empty"
+                }
+              ]
+            ],
+            "description": "Battle map for Dragons Lair Demo"
+          },
+          "createdAt": 1759968185611,
+          "usageCount": 1
+        }
+      ],
+      "createdAt": 1759966347195,
+      "updatedAt": 1759968216992
+    }
+  ],
+  "defaultCampaignId": "ec6549e8-ef55-4649-bd90-ead77cef9d7e"
+}

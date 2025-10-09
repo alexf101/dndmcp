@@ -51,6 +51,12 @@ This project creates a battle state management system that separates state stora
 
 The backend server will start on `http://localhost:8000` (or configured port).
 
+### Backend tests
+
+We have integration tests for the major API endpoints. Run them as:
+
+    deno task test
+
 ### Frontend (React App)
 
 1. Navigate to the frontend directory:
@@ -93,6 +99,7 @@ To run both backend and frontend simultaneously:
 
 -   `deno task dev` - Start development server with file watching
 -   `deno task start` - Start production server
+-   `deno task test` - Run backend API endpoint tests
 
 ### Frontend (React)
 
@@ -110,25 +117,6 @@ The backend provides RESTful endpoints for battle state management:
 -   `GET /api/battles/:id` - Get battle details
 -   `PUT /api/battles/:id` - Update battle state
 -   `DELETE /api/battles/:id` - Delete battle
-
-## Project Structure
-
-```
-├── backend/          # Deno backend server
-│   ├── src/
-│   │   ├── main.ts          # Server entry point
-│   │   ├── routes.ts        # API routes
-│   │   ├── types.ts         # TypeScript types
-│   │   └── battle-store.ts  # Battle state management
-│   └── deno.json     # Deno configuration
-├── frontend/         # React frontend
-│   ├── src/
-│   │   ├── components/      # React components
-│   │   ├── App.tsx         # Main app component
-│   │   └── api.ts          # API client
-│   └── package.json  # Node.js dependencies
-└── docs/            # Project documentation
-```
 
 ## Features
 

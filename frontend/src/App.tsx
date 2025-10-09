@@ -5,6 +5,8 @@ import { createBattle, getBattle, getAllBattles, executeCommand } from "./api";
 import BattleDisplay from "./components/BattleDisplay";
 import CommandForm from "./components/CommandForm";
 import CreatureTable from "./components/CreatureTable";
+import CampaignCreatureSearch from "./components/CampaignCreatureSearch";
+import BattleMapVisualization from "./components/BattleMapVisualization";
 
 const AppContainer = styled.div`
     max-width: 1400px;
@@ -60,7 +62,7 @@ const MainContent = styled.div`
     gap: ${({ theme }) => theme.spacing.xl};
     align-items: start;
 
-    @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    @media (max-width: 1200px) {
         grid-template-columns: 1fr;
     }
 `;
@@ -74,26 +76,43 @@ const LeftPanel = styled.div`
 const RightPanel = styled.div`
     position: sticky;
     top: ${({ theme }) => theme.spacing.md};
+    display: flex;
+    flex-direction: column;
+    gap: ${({ theme }) => theme.spacing.lg};
 
-    @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    @media (max-width: 1200px) {
         position: static;
     }
 `;
 
 const COMMAND_PRESETS: CommandPreset[] = [
     {
-        name: "Create Battle",
-        description: "Create a new battle encounter",
+        name: "Create Grid Battle",
+        description: "Create a new grid-based battle with map",
         command: `{
   "type": "CREATE_BATTLE",
   "data": {
-    "name": "Goblin Ambush"
+    "name": "Dragon's Lair",
+    "mode": "GridBased",
+    "mapSize": { "width": 20, "height": 15 }
   }
 }`,
     },
     {
-        name: "Add Creature",
-        description: "Add a creature to the battle",
+        name: "Create Theatre Battle",
+        description: "Create a new theatre of mind battle",
+        command: `{
+  "type": "CREATE_BATTLE",
+  "data": {
+    "name": "Goblin Ambush",
+    "mode": "TheatreOfMind",
+    "sceneDescription": "A dimly lit forest path with thick undergrowth on both sides..."
+  }
+}`,
+    },
+    {
+        name: "Add Creature (Grid)",
+        description: "Add a creature to a grid-based battle with position",
         command: `{
   "type": "ADD_CREATURE",
   "data": {
@@ -111,6 +130,34 @@ const COMMAND_PRESETS: CommandPreset[] = [
       "cha": 8
     },
     "statusEffects": [],
+    "size": "Small",
+    "position": { "x": 5, "y": 5 },
+    "isPlayer": false
+  }
+}`,
+    },
+    {
+        name: "Add Large Dragon",
+        description: "Add a large dragon to the battle",
+        command: `{
+  "type": "ADD_CREATURE",
+  "data": {
+    "name": "Young Red Dragon",
+    "hp": 178,
+    "maxHp": 178,
+    "ac": 18,
+    "initiative": 10,
+    "stats": {
+      "str": 23,
+      "dex": 10,
+      "con": 21,
+      "int": 14,
+      "wis": 11,
+      "cha": 19
+    },
+    "statusEffects": [],
+    "size": "Large",
+    "position": { "x": 10, "y": 8 },
     "isPlayer": false
   }
 }`,
@@ -161,6 +208,32 @@ const COMMAND_PRESETS: CommandPreset[] = [
         command: `{
   "type": "START_BATTLE",
   "data": {}
+}`,
+    },
+    {
+        name: "Set Terrain (Walls)",
+        description: "Add walls to the map",
+        command: `{
+  "type": "SET_TERRAIN",
+  "data": {
+    "positions": [
+      { "x": 0, "y": 0 },
+      { "x": 1, "y": 0 },
+      { "x": 2, "y": 0 }
+    ],
+    "terrain": "Wall"
+  }
+}`,
+    },
+    {
+        name: "Move Creature",
+        description: "Move a creature to a new position",
+        command: `{
+  "type": "MOVE_CREATURE",
+  "data": {
+    "creatureId": "creature-id-here",
+    "position": { "x": 8, "y": 10 }
+  }
 }`,
     },
     {
@@ -283,6 +356,16 @@ function App() {
         }
     };
 
+    const handleCreatureAdded = (updatedBattle: BattleState) => {
+        setCurrentBattle(updatedBattle);
+        setBattles((prev) =>
+            prev.map((b) =>
+                b.id === updatedBattle.id ? updatedBattle : b,
+            ),
+        );
+        setError(null);
+    };
+
     return (
         <AppContainer>
             <Header>
@@ -318,6 +401,7 @@ function App() {
 
             <MainContent>
                 <LeftPanel>
+                    <BattleMapVisualization battle={currentBattle} />
                     <BattleDisplay battle={currentBattle} />
                     {currentBattle && (
                         <CreatureTable
@@ -328,6 +412,11 @@ function App() {
                 </LeftPanel>
 
                 <RightPanel>
+                    <CampaignCreatureSearch
+                        currentBattle={currentBattle}
+                        onCreatureAdded={handleCreatureAdded}
+                        disabled={loading}
+                    />
                     <CommandForm
                         onExecute={handleExecuteCommand}
                         presets={COMMAND_PRESETS}
