@@ -9,7 +9,7 @@ import {
     createEmptyMap,
     canCreatureOccupyPosition,
     getMapCell,
-    isValidPosition
+    isValidPosition,
 } from "./types.ts";
 import { CampaignStore } from "./campaign-store.ts";
 
@@ -29,14 +29,14 @@ export class BattleStore {
 
     createBattle(
         name: string,
-        mode: BattleMode = 'TheatreOfMind',
+        mode: BattleMode = "TheatreOfMind",
         mapSize?: { width: number; height: number },
-        sceneDescription?: string
+        sceneDescription?: string,
     ): BattleState {
         const id = crypto.randomUUID();
 
         let map: BattleMap | undefined;
-        if (mode === 'GridBased') {
+        if (mode === "GridBased") {
             const width = mapSize?.width || 25;
             const height = mapSize?.height || 25;
             map = createEmptyMap(width, height, `Battle map for ${name}`);
@@ -52,18 +52,104 @@ export class BattleStore {
             history: [],
             mode,
             map,
-            sceneDescription: mode === 'TheatreOfMind' ? sceneDescription : undefined,
-            creaturePositions: mode === 'TheatreOfMind' ? undefined : undefined,
+            sceneDescription:
+                mode === "TheatreOfMind" ? sceneDescription : undefined,
+            creaturePositions: undefined,
         };
 
         this.battles.set(id, battle);
 
         // Automatically register the map to the default campaign if it's grid-based
-        if (mode === 'GridBased' && map) {
+        if (mode === "GridBased" && map) {
             try {
                 this.campaignStore.addMapToDefaultCampaign(map, battle);
             } catch (error) {
-                console.warn("Failed to register map to default campaign:", error);
+                console.warn(
+                    "Failed to register map to default campaign:",
+                    error,
+                );
+            }
+        }
+
+        return battle;
+    }
+
+    updateBattle(
+        id: string,
+        name?: string,
+        mode?: BattleMode,
+        mapSize?: { width: number; height: number },
+        sceneDescription?: string,
+    ): BattleState {
+        const battle = this.battles.get(id);
+        if (!battle) {
+            console.error(`Battle with ID ${id} not found`);
+            console.info(`All battle IDs:`, Array.from(this.battles.keys()));
+            throw new Error("Battle not found");
+        }
+
+        if (name !== undefined) battle.name = name;
+        if (mode !== undefined) {
+            battle.mode = mode;
+
+            if (mode === "GridBased") {
+                if (!battle.map) {
+                    const width = mapSize?.width || 25;
+                    const height = mapSize?.height || 25;
+                    battle.map = createEmptyMap(
+                        width,
+                        height,
+                        `Battle map for ${name}`,
+                    );
+
+                    // Automatically register the map to the default campaign
+                    try {
+                        this.campaignStore.addMapToDefaultCampaign(
+                            battle.map,
+                            battle,
+                        );
+                    } catch (error) {
+                        console.warn(
+                            "Failed to register map to default campaign:",
+                            error,
+                        );
+                    }
+                }
+                // Don't change existing map size to avoid data loss
+                // Do reposition creatures if needed
+                for (const creature of battle.creatures) {
+                    if (
+                        creature.position &&
+                        battle.map &&
+                        !canCreatureOccupyPosition(
+                            battle.map,
+                            creature.position,
+                            creature.size,
+                            creature.id,
+                            battle.creatures,
+                        ).canOccupy
+                    ) {
+                        // Find first available position
+                        const newPos = this.findFirstAvailablePosition(
+                            battle.map,
+                            creature.size,
+                            battle.creatures.filter(
+                                (c) => c.id !== creature.id,
+                            ),
+                        );
+                        // If no position found, remove position (will need manual placement)
+                        console.warn(
+                            `No valid position found for creature ${creature.id}. Manual placement required.`,
+                        );
+                        creature.position = newPos || undefined;
+                    }
+                }
+            } else {
+                // For Theatre of Mind, nothing should need to change.
+                // Keep the map in-case the user switches back later (i.e. if
+                // this update was accidental).
+                battle.sceneDescription = sceneDescription;
+                battle.creaturePositions = undefined;
             }
         }
 
@@ -83,16 +169,18 @@ export class BattleStore {
         if (!battle) return null;
 
         // For grid-based battles, validate position if provided
-        if (battle.mode === 'GridBased' && battle.map && creature.position) {
+        if (battle.mode === "GridBased" && battle.map && creature.position) {
             const positionCheck = canCreatureOccupyPosition(
                 battle.map,
                 creature.position,
                 creature.size,
                 undefined,
-                battle.creatures
+                battle.creatures,
             );
             if (!positionCheck.canOccupy) {
-                throw new Error(`Cannot place creature at position: ${positionCheck.reason}`);
+                throw new Error(
+                    `Cannot place creature at position: ${positionCheck.reason}`,
+                );
             }
         }
 
@@ -115,9 +203,15 @@ export class BattleStore {
 
         // Automatically register the creature to the default campaign
         try {
-            this.campaignStore.addCreatureToDefaultCampaign(newCreature, battle);
+            this.campaignStore.addCreatureToDefaultCampaign(
+                newCreature,
+                battle,
+            );
         } catch (error) {
-            console.warn("Failed to register creature to default campaign:", error);
+            console.warn(
+                "Failed to register creature to default campaign:",
+                error,
+            );
         }
 
         return battle;
@@ -223,17 +317,19 @@ export class BattleStore {
     moveCreature(
         battleId: string,
         creatureId: string,
-        data: { position: GridPosition }
+        data: { position: GridPosition },
     ): BattleState | null {
         const battle = this.battles.get(battleId);
         if (!battle) return null;
 
         // Only grid-based battles support movement
-        if (battle.mode !== 'GridBased' || !battle.map) {
-            throw new Error('Movement is only supported in grid-based battles');
+        if (battle.mode !== "GridBased" || !battle.map) {
+            throw new Error("Movement is only supported in grid-based battles");
         }
 
-        const creatureIndex = battle.creatures.findIndex(c => c.id === creatureId);
+        const creatureIndex = battle.creatures.findIndex(
+            (c) => c.id === creatureId,
+        );
         if (creatureIndex === -1) return null;
 
         const creature = battle.creatures[creatureIndex];
@@ -245,10 +341,12 @@ export class BattleStore {
             position,
             creature.size,
             creatureId,
-            battle.creatures
+            battle.creatures,
         );
         if (!positionCheck.canOccupy) {
-            throw new Error(`Cannot move creature to position: ${positionCheck.reason}`);
+            throw new Error(
+                `Cannot move creature to position: ${positionCheck.reason}`,
+            );
         }
 
         const action: BattleAction = {
@@ -261,7 +359,7 @@ export class BattleStore {
 
         battle.creatures[creatureIndex] = {
             ...creature,
-            position
+            position,
         };
         battle.history.push(action);
 
@@ -276,14 +374,16 @@ export class BattleStore {
             doorOpen?: boolean;
             elevation?: number;
             hazardDamage?: number;
-        }
+        },
     ): BattleState | null {
         const battle = this.battles.get(battleId);
         if (!battle) return null;
 
         // Only grid-based battles have maps
-        if (battle.mode !== 'GridBased' || !battle.map) {
-            throw new Error('Terrain modification is only supported in grid-based battles');
+        if (battle.mode !== "GridBased" || !battle.map) {
+            throw new Error(
+                "Terrain modification is only supported in grid-based battles",
+            );
         }
 
         const { positions, terrain, doorOpen, elevation, hazardDamage } = data;
@@ -291,7 +391,9 @@ export class BattleStore {
         // Validate all positions are within map bounds
         for (const pos of positions) {
             if (!isValidPosition(battle.map, pos)) {
-                throw new Error(`Position (${pos.x}, ${pos.y}) is outside map bounds`);
+                throw new Error(
+                    `Position (${pos.x}, ${pos.y}) is outside map bounds`,
+                );
             }
         }
 
@@ -303,8 +405,8 @@ export class BattleStore {
             previousState: {
                 map: {
                     ...battle.map,
-                    cells: battle.map.cells.map(row => [...row])
-                }
+                    cells: battle.map.cells.map((row) => [...row]),
+                },
             },
         };
 
@@ -321,23 +423,30 @@ export class BattleStore {
         return battle;
     }
 
-    toggleDoor(battleId: string, data: { position: GridPosition }): BattleState | null {
+    toggleDoor(
+        battleId: string,
+        data: { position: GridPosition },
+    ): BattleState | null {
         const battle = this.battles.get(battleId);
         if (!battle) return null;
 
-        if (battle.mode !== 'GridBased' || !battle.map) {
-            throw new Error('Door manipulation is only supported in grid-based battles');
+        if (battle.mode !== "GridBased" || !battle.map) {
+            throw new Error(
+                "Door manipulation is only supported in grid-based battles",
+            );
         }
 
         const { position } = data;
 
         if (!isValidPosition(battle.map, position)) {
-            throw new Error(`Position (${position.x}, ${position.y}) is outside map bounds`);
+            throw new Error(
+                `Position (${position.x}, ${position.y}) is outside map bounds`,
+            );
         }
 
         const cell = getMapCell(battle.map, position);
-        if (!cell || cell.terrain !== 'Door') {
-            throw new Error('No door at specified position');
+        if (!cell || cell.terrain !== "Door") {
+            throw new Error("No door at specified position");
         }
 
         const action: BattleAction = {
@@ -348,8 +457,8 @@ export class BattleStore {
             previousState: {
                 map: {
                     ...battle.map,
-                    cells: battle.map.cells.map(row => [...row])
-                }
+                    cells: battle.map.cells.map((row) => [...row]),
+                },
             },
         };
 
@@ -360,26 +469,105 @@ export class BattleStore {
         return battle;
     }
 
+    // Helper method to find first available position on grid
+    private findFirstAvailablePosition(
+        map: BattleMap,
+        creatureSize: CreatureSize,
+        existingCreatures: Creature[],
+    ): GridPosition | null {
+        // Search from top-left to bottom-right, row by row
+        for (let y = 0; y < map.height; y++) {
+            for (let x = 0; x < map.width; x++) {
+                const position = { x, y };
+                const positionCheck = canCreatureOccupyPosition(
+                    map,
+                    position,
+                    creatureSize,
+                    undefined,
+                    existingCreatures,
+                );
+                if (positionCheck.canOccupy) {
+                    return position;
+                }
+            }
+        }
+        return null; // No available position found
+    }
+
     // Campaign integration methods
 
-    addCreatureFromCampaign(battleId: string, campaignCreatureId: string, position?: GridPosition): BattleState | null {
+    addCreatureFromCampaign(
+        battleId: string,
+        campaignCreatureId: string,
+        position?: GridPosition,
+    ): BattleState | null {
+        console.log("=== addCreatureFromCampaign called ===");
+        console.log("battleId:", battleId);
+        console.log("campaignCreatureId:", campaignCreatureId);
+        console.log("position:", position);
+        console.log("position type:", typeof position);
+        console.log("position === undefined:", position === undefined);
+        console.log("position === null:", position === null);
+
         const battle = this.battles.get(battleId);
         if (!battle) return null;
 
-        const creature = this.campaignStore.createCreatureFromCampaign(campaignCreatureId, position);
+        console.log("Battle mode:", battle.mode);
+        console.log("Battle has map:", !!battle.map);
+
+        let finalPosition = position;
+
+        // For grid-based battles, auto-find position if not provided
+        if (
+            battle.mode === "GridBased" &&
+            battle.map &&
+            (finalPosition === undefined || finalPosition === null)
+        ) {
+            const campaignCreature =
+                this.campaignStore.getCampaignCreature(campaignCreatureId);
+            const creatureSize = campaignCreature?.template.size || "Medium";
+            console.log(
+                `Auto-placing ${
+                    campaignCreature?.name || "creature"
+                } (${creatureSize}) on ${battle.map.width}x${
+                    battle.map.height
+                } grid with ${battle.creatures.length} existing creatures`,
+            );
+
+            finalPosition = this.findFirstAvailablePosition(
+                battle.map,
+                creatureSize,
+                battle.creatures,
+            );
+
+            console.log(`Found position:`, finalPosition);
+
+            if (!finalPosition) {
+                throw new Error(
+                    "No available position found on the map for this creature",
+                );
+            }
+        }
+
+        const creature = this.campaignStore.createCreatureFromCampaign(
+            campaignCreatureId,
+            finalPosition,
+        );
         if (!creature) return null;
 
         // For grid-based battles, validate position if provided
-        if (battle.mode === 'GridBased' && battle.map && creature.position) {
+        if (battle.mode === "GridBased" && battle.map && creature.position) {
             const positionCheck = canCreatureOccupyPosition(
                 battle.map,
                 creature.position,
                 creature.size,
                 undefined,
-                battle.creatures
+                battle.creatures,
             );
             if (!positionCheck.canOccupy) {
-                throw new Error(`Cannot place creature at position: ${positionCheck.reason}`);
+                throw new Error(
+                    `Cannot place creature at position: ${positionCheck.reason}`,
+                );
             }
         }
 
@@ -400,7 +588,10 @@ export class BattleStore {
 
     // Theatre of Mind description methods
 
-    updateSceneDescription(battleId: string, data: { description: string }): BattleState | null {
+    updateSceneDescription(
+        battleId: string,
+        data: { description: string },
+    ): BattleState | null {
         const battle = this.battles.get(battleId);
         if (!battle) return null;
 
@@ -418,7 +609,10 @@ export class BattleStore {
         return battle;
     }
 
-    updateCreaturePositions(battleId: string, data: { positions: string }): BattleState | null {
+    updateCreaturePositions(
+        battleId: string,
+        data: { positions: string },
+    ): BattleState | null {
         const battle = this.battles.get(battleId);
         if (!battle) return null;
 

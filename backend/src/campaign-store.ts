@@ -290,6 +290,17 @@ export class CampaignStore {
         return true;
     }
 
+    getCampaignCreature(creatureId: string): CampaignCreature | null {
+        // Find the creature across all campaigns
+        for (const campaign of this.state.campaigns) {
+            const campaignCreature = campaign.creatures.find(c => c.id === creatureId);
+            if (campaignCreature) {
+                return campaignCreature;
+            }
+        }
+        return null;
+    }
+
     // === Search and Query Methods ===
 
     searchCreatures(query: string, campaignId?: string): CampaignCreature[] {
