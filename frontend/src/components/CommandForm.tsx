@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, forwardRef, useImperativeHandle } from 'react';
 import styled from 'styled-components';
 import type { CommandPreset } from '../types';
 
@@ -140,7 +140,12 @@ interface CommandFormProps {
   disabled: boolean;
 }
 
-export default function CommandForm({ onExecute, presets, disabled }: CommandFormProps) {
+export interface CommandFormRef {
+  fillCommand: (command: string) => void;
+}
+
+const CommandForm = forwardRef<CommandFormRef, CommandFormProps>(
+  ({ onExecute, presets, disabled }, ref) => {
   const [command, setCommand] = useState('');
   const [selectedPreset, setSelectedPreset] = useState('');
 
@@ -168,6 +173,13 @@ export default function CommandForm({ onExecute, presets, disabled }: CommandFor
       console.error('Invalid JSON');
     }
   };
+
+  useImperativeHandle(ref, () => ({
+    fillCommand: (cmd: string) => {
+      setCommand(cmd);
+      setSelectedPreset(''); // Clear any selected preset when filling from external source
+    }
+  }));
 
   return (
     <FormContainer>
@@ -228,4 +240,8 @@ export default function CommandForm({ onExecute, presets, disabled }: CommandFor
       </CommandHelp>
     </FormContainer>
   );
-}
+});
+
+CommandForm.displayName = 'CommandForm';
+
+export default CommandForm;

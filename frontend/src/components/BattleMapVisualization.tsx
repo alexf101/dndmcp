@@ -105,7 +105,7 @@ const MapCell = styled.div<{
   `}
 `;
 
-const CreatureToken = styled.div<{ size: CreatureSize; isPlayer: boolean }>`
+const CreatureToken = styled.div<{ size: CreatureSize; isPlayer: boolean; $isHighlighted?: boolean }>`
     position: absolute;
     top: 50%;
     left: 50%;
@@ -148,6 +148,18 @@ const CreatureToken = styled.div<{ size: CreatureSize; isPlayer: boolean }>`
   &:hover {
         transform: translate(-50%, -50%) scale(1.1);
         box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+    }
+
+    ${(props) => props.$isHighlighted && `
+        transform: translate(-50%, -50%) scale(1.2);
+        box-shadow: 0 0 12px ${props.isPlayer ? '#28a745' : '#dc3545'}, 0 0 20px rgba(255, 255, 255, 0.8);
+        z-index: 15;
+        animation: highlight-pulse 2s infinite;
+    `}
+
+    @keyframes highlight-pulse {
+        0%, 100% { box-shadow: 0 0 12px ${props => props.isPlayer ? '#28a745' : '#dc3545'}, 0 0 20px rgba(255, 255, 255, 0.8); }
+        50% { box-shadow: 0 0 16px ${props => props.isPlayer ? '#28a745' : '#dc3545'}, 0 0 24px rgba(255, 255, 255, 1); }
     }
 `;
 
@@ -212,10 +224,12 @@ const NoMapMessage = styled.div`
 
 interface BattleMapVisualizationProps {
     battle: BattleState | null;
+    highlightedCreatureId?: string | null;
 }
 
 export default function BattleMapVisualization({
     battle,
+    highlightedCreatureId,
 }: BattleMapVisualizationProps) {
     const [tooltipState, setTooltipState] = useState<{
         creature: Creature | null;
@@ -344,6 +358,7 @@ export default function BattleMapVisualization({
                                 <CreatureToken
                                     size={creature.size}
                                     isPlayer={creature.isPlayer}
+                                    $isHighlighted={highlightedCreatureId === creature.id}
                                     onClick={(e) =>
                                         handleCreatureClick(creature, e)
                                     }

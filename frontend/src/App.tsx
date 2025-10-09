@@ -1,9 +1,9 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import styled from "styled-components";
 import type { BattleState, CommandPreset } from "./types";
 import { createBattle, getBattle, getAllBattles, executeCommand } from "./api";
 import BattleDisplay from "./components/BattleDisplay";
-import CommandForm from "./components/CommandForm";
+import CommandForm, { CommandFormRef } from "./components/CommandForm";
 import CreatureTable from "./components/CreatureTable";
 import CampaignCreatureSearch from "./components/CampaignCreatureSearch";
 import BattleMapVisualization from "./components/BattleMapVisualization";
@@ -253,6 +253,8 @@ function App() {
     );
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [highlightedCreatureId, setHighlightedCreatureId] = useState<string | null>(null);
+    const commandFormRef = useRef<CommandFormRef>(null);
 
     const loadBattles = useCallback(async () => {
         try {
@@ -366,6 +368,16 @@ function App() {
         setError(null);
     };
 
+    const handleFillCommand = (command: string) => {
+        if (commandFormRef.current) {
+            commandFormRef.current.fillCommand(command);
+        }
+    };
+
+    const handleHighlightCreature = (creatureId: string) => {
+        setHighlightedCreatureId(creatureId || null);
+    };
+
     return (
         <AppContainer>
             <Header>
@@ -401,12 +413,18 @@ function App() {
 
             <MainContent>
                 <LeftPanel>
-                    <BattleMapVisualization battle={currentBattle} />
+                    <BattleMapVisualization
+                        battle={currentBattle}
+                        highlightedCreatureId={highlightedCreatureId}
+                    />
                     <BattleDisplay battle={currentBattle} />
                     {currentBattle && (
                         <CreatureTable
                             creatures={currentBattle.creatures}
                             currentTurn={currentBattle.currentTurn}
+                            onFillCommand={handleFillCommand}
+                            onHighlightCreature={handleHighlightCreature}
+                            highlightedCreatureId={highlightedCreatureId}
                         />
                     )}
                 </LeftPanel>
@@ -421,6 +439,7 @@ function App() {
                         onExecute={handleExecuteCommand}
                         presets={COMMAND_PRESETS}
                         disabled={loading}
+                        ref={commandFormRef}
                     />
                 </RightPanel>
             </MainContent>

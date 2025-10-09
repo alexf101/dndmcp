@@ -55,7 +55,8 @@
             "isPlayer": true
           },
           "createdAt": 1759967997159,
-          "usageCount": 1
+          "usageCount": 2,
+          "lastUsed": 1759970590114
         },
         {
           "id": "aa71448f-6c49-4fb1-adc5-45a39b510563",
@@ -1405,7 +1406,7 @@
         }
       ],
       "createdAt": 1759966347195,
-      "updatedAt": 1759968216992
+      "updatedAt": 1759970590114
     }
   ],
   "defaultCampaignId": "ec6549e8-ef55-4649-bd90-ead77cef9d7e"

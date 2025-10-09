@@ -72,12 +72,81 @@ const CreatureId = styled.td`
   color: ${({ theme }) => theme.colors.text.quaternary};
 `;
 
+const ActionsCell = styled.td`
+  display: flex;
+  gap: ${({ theme }) => theme.spacing.xs};
+  align-items: center;
+`;
+
+const ActionButton = styled.button<{ $variant?: 'delete' | 'edit' | 'highlight' | 'highlighted' }>`
+  background: none;
+  border: 1px solid transparent;
+  padding: ${({ theme }) => theme.spacing.xs};
+  border-radius: ${({ theme }) => theme.radii.base};
+  cursor: pointer;
+  font-size: ${({ theme }) => theme.typography.sizes.sm};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  min-height: 24px;
+  transition: all 0.2s ease;
+
+  ${({ $variant, theme }) => {
+    switch ($variant) {
+      case 'delete':
+        return `
+          color: ${theme.colors.status.danger};
+          &:hover {
+            background: ${theme.colors.error.background};
+            border-color: ${theme.colors.status.danger};
+          }
+        `;
+      case 'edit':
+        return `
+          color: ${theme.colors.text.secondary};
+          &:hover {
+            background: ${theme.colors.background.surfaceHover};
+            border-color: ${theme.colors.interactive.border};
+            color: ${theme.colors.primary};
+          }
+        `;
+      case 'highlight':
+        return `
+          color: ${theme.colors.text.secondary};
+          &:hover {
+            background: ${theme.colors.background.surfaceHover};
+            border-color: ${theme.colors.interactive.border};
+            color: ${theme.colors.primary};
+          }
+        `;
+      case 'highlighted':
+        return `
+          color: ${theme.colors.primary};
+          background: ${theme.colors.background.surfaceHover};
+          border-color: ${theme.colors.primary};
+        `;
+      default:
+        return '';
+    }
+  }}
+`;
+
 interface CreatureTableProps {
   creatures: Creature[];
   currentTurn: number;
+  onFillCommand?: (command: string) => void;
+  onHighlightCreature?: (creatureId: string) => void;
+  highlightedCreatureId?: string | null;
 }
 
-export default function CreatureTable({ creatures, currentTurn }: CreatureTableProps) {
+export default function CreatureTable({
+  creatures,
+  currentTurn,
+  onFillCommand,
+  onHighlightCreature,
+  highlightedCreatureId
+}: CreatureTableProps) {
   if (creatures.length === 0) {
     return (
       <TableContainer>
@@ -100,6 +169,7 @@ export default function CreatureTable({ creatures, currentTurn }: CreatureTableP
             <th>AC</th>
             <th>Status Effects</th>
             <th>ID</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -140,6 +210,35 @@ export default function CreatureTable({ creatures, currentTurn }: CreatureTableP
                 )}
               </td>
               <CreatureId>{creature.id}</CreatureId>
+              <ActionsCell>
+                <ActionButton
+                  $variant="delete"
+                  title="Delete creature"
+                  onClick={() => onFillCommand && onFillCommand(
+                    `{\n  "type": "REMOVE_CREATURE",\n  "data": {\n    "creatureId": "${creature.id}"\n  }\n}`
+                  )}
+                >
+                  🗑️
+                </ActionButton>
+                <ActionButton
+                  $variant="edit"
+                  title="Edit creature"
+                  onClick={() => onFillCommand && onFillCommand(
+                    `{\n  "type": "UPDATE_CREATURE",\n  "data": {\n    "creatureId": "${creature.id}",\n    "updates": {\n      "hp": ${creature.hp}\n    }\n  }\n}`
+                  )}
+                >
+                  ✏️
+                </ActionButton>
+                <ActionButton
+                  $variant={highlightedCreatureId === creature.id ? 'highlighted' : 'highlight'}
+                  title={highlightedCreatureId === creature.id ? 'Remove highlight' : 'Highlight on map'}
+                  onClick={() => onHighlightCreature && onHighlightCreature(
+                    highlightedCreatureId === creature.id ? '' : creature.id
+                  )}
+                >
+                  👁️
+                </ActionButton>
+              </ActionsCell>
             </CreatureRow>
           ))}
         </tbody>
