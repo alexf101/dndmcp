@@ -15,6 +15,7 @@ import {
 import { CampaignStore } from "./campaign-store.ts";
 import { ImpossibleCommandError } from "./errors.ts";
 import { logger } from "./logger.ts";
+import { sseManager } from "./sse-manager.ts";
 
 const BATTLE_DATA_FILE = "./battle-data.json";
 
@@ -92,6 +93,20 @@ export class BattleStore {
         }, 1000); // Save after 1 second of inactivity
     }
 
+    // Emit battle update event via SSE
+    private emitBattleUpdate(battleId: string) {
+        const battle = this.battles.get(battleId);
+        if (battle) {
+            sseManager.broadcastBattleUpdate(battleId, battle);
+        }
+    }
+
+    // Emit battle list update event via SSE
+    private emitBattleListUpdate() {
+        const battles = this.getAllBattles();
+        sseManager.broadcastBattleListUpdate(battles);
+    }
+
     createBattle(
         name: string,
         mode: BattleMode = "TheatreOfMind",
@@ -137,6 +152,8 @@ export class BattleStore {
         }
 
         this.saveToFile();
+        this.emitBattleUpdate(id);
+        this.emitBattleListUpdate();
         return battle;
     }
 
@@ -227,6 +244,7 @@ export class BattleStore {
         }
 
         this.saveToFile();
+        this.emitBattleUpdate(battleId);
         return battle;
     }
 
@@ -289,6 +307,7 @@ export class BattleStore {
         }
 
         this.saveToFile();
+        this.emitBattleUpdate(battleId);
         return battle;
     }
 
@@ -320,6 +339,7 @@ export class BattleStore {
         battle.history.push(action);
 
         this.saveToFile();
+        this.emitBattleUpdate(battleId);
         return battle;
     }
 
@@ -339,6 +359,7 @@ export class BattleStore {
         battle.history.push(action);
 
         this.saveToFile();
+        this.emitBattleUpdate(battleId);
         return battle;
     }
 
@@ -377,6 +398,7 @@ export class BattleStore {
         }
 
         this.saveToFile();
+        this.emitBattleUpdate(battleId);
         return battle;
     }
 
@@ -389,6 +411,7 @@ export class BattleStore {
         battle.round = 1;
 
         this.saveToFile();
+        this.emitBattleUpdate(battleId);
         return battle;
     }
 
@@ -446,6 +469,7 @@ export class BattleStore {
         battle.history.push(action);
 
         this.saveToFile();
+        this.emitBattleUpdate(battleId);
         return battle;
     }
 
@@ -667,6 +691,7 @@ export class BattleStore {
         battle.history.push(action);
 
         this.saveToFile();
+        this.emitBattleUpdate(battleId);
         return battle;
     }
 
@@ -691,6 +716,7 @@ export class BattleStore {
         battle.history.push(action);
 
         this.saveToFile();
+        this.emitBattleUpdate(battleId);
         return battle;
     }
 
@@ -713,6 +739,7 @@ export class BattleStore {
         battle.history.push(action);
 
         this.saveToFile();
+        this.emitBattleUpdate(battleId);
         return battle;
     }
 

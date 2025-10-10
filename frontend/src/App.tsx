@@ -7,6 +7,7 @@ import CommandForm, { CommandFormRef } from "./components/CommandForm";
 import CreatureTable from "./components/CreatureTable";
 import CampaignCreatureSearch from "./components/CampaignCreatureSearch";
 import BattleMapVisualization from "./components/BattleMapVisualization";
+import { useSSE, SSEMessage } from "./hooks/useSSE";
 
 const AppContainer = styled.div`
     max-width: 1400px;
@@ -45,6 +46,26 @@ const ErrorMessage = styled.div`
     border-radius: ${({ theme }) => theme.radii.base};
     margin-bottom: ${({ theme }) => theme.spacing.md};
     border: 1px solid ${({ theme }) => theme.colors.error.border};
+`;
+
+const SSEStatus = styled.div<{ connected: boolean }>`
+    display: flex;
+    align-items: center;
+    gap: ${({ theme }) => theme.spacing.xs};
+    padding: ${({ theme }) => theme.spacing.sm};
+    border-radius: ${({ theme }) => theme.radii.base};
+    font-size: 0.875rem;
+    background: ${({ connected, theme }) =>
+        connected ? theme.colors.success.background : theme.colors.warning.background};
+    color: ${({ connected, theme }) =>
+        connected ? theme.colors.success.text : theme.colors.warning.text};
+    border: 1px solid ${({ connected, theme }) =>
+        connected ? theme.colors.success.border : theme.colors.warning.border};
+
+    &::before {
+        content: "${({ connected }) => connected ? '🟢' : '🟡'}";
+        font-size: 0.75rem;
+    }
 `;
 
 const LoadingMessage = styled.div`
@@ -256,6 +277,59 @@ function App() {
     const [highlightedCreatureId, setHighlightedCreatureId] = useState<string | null>(null);
     const commandFormRef = useRef<CommandFormRef>(null);
 
+    // SSE connection for real-time updates
+    const handleSSEMessage = useCallback((message: SSEMessage) => {
+        switch (message.type) {
+            case 'battle_updated':
+                if (message.battleState) {
+                    // Update current battle if it matches the updated battle
+                    if (currentBattle && message.battleId === currentBattle.id) {
+                        console.log('🔄 Updating current battle from SSE');
+                        setCurrentBattle(message.battleState);
+                    }
+
+                    // Update battle in the battles list
+                    setBattles(prev =>
+                        prev.map(battle =>
+                            battle.id === message.battleId ? message.battleState : battle
+                        )
+                    );
+                }
+                break;
+
+            case 'battle_list_updated':
+                if (message.battles) {
+                    console.log('🔄 Updating battle list from SSE');
+                    setBattles(message.battles);
+
+                    // If current battle is null but we have battles, select the first one
+                    if (!currentBattle && message.battles.length > 0) {
+                        setCurrentBattle(message.battles[0]);
+                    }
+                }
+                break;
+
+            case 'connected':
+                console.log('🎯 SSE Connected to D&D Battle Manager');
+                break;
+        }
+    }, [currentBattle]);
+
+    const { isConnected: sseConnected, error: sseError } = useSSE({
+        url: 'http://localhost:8000/api/events',
+        battleId: currentBattle?.id,
+        onMessage: handleSSEMessage,
+        onConnect: () => {
+            console.log('✅ SSE Connected for real-time updates');
+            setError(null); // Clear any previous SSE errors
+        },
+        onError: (error) => {
+            console.warn('⚠️ SSE Error (will auto-reconnect):', error);
+        },
+        autoReconnect: true,
+        reconnectInterval: 3000,
+    });
+
     const loadBattles = useCallback(async () => {
         try {
             setLoading(true);
@@ -405,6 +479,9 @@ function App() {
                 >
                     Refresh
                 </button>
+                <SSEStatus connected={sseConnected}>
+                    {sseConnected ? 'Live Updates' : 'Connecting...'}
+                </SSEStatus>
             </Header>
 
             {error && <ErrorMessage>❌ Error: {error}</ErrorMessage>}

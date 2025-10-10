@@ -8,6 +8,7 @@ import {
     CampaignCommandType,
 } from "./types.ts";
 import { ImpossibleCommandError } from "./errors.ts";
+import { sseManager } from "./sse-manager.ts";
 
 export function generateRoutes(
     battleStore: BattleStore,
@@ -309,6 +310,16 @@ export function generateRoutes(
 
         const results = campaignStore.searchMaps(query, campaignId);
         ctx.response.body = { success: true, data: results } as APIResponse;
+    });
+
+    // SSE Routes for real-time updates
+    router.get("/api/events", async (ctx) => {
+        await sseManager.handleSSEConnection(ctx);
+    });
+
+    router.get("/api/events/battle/:battleId", async (ctx) => {
+        const { battleId } = ctx.params;
+        await sseManager.handleSSEConnection(ctx, battleId);
     });
 
     return router;
