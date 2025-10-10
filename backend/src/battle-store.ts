@@ -191,6 +191,27 @@ export class BattleStore {
                         height,
                         `Battle map for ${name}`,
                     );
+                } else {
+                    // We have an existing map, but the user might want to resize it
+                    if (mapSize) {
+                        battle.map.width = mapSize.width;
+                        battle.map.height = mapSize.height;
+                        // Extend the cells arrays if needed
+                        for (let y = 0; y < mapSize.height; y++) {
+                            if (!battle.map.cells[y]) {
+                                battle.map.cells[y] = [];
+                            }
+                            for (let x = 0; x < mapSize.width; x++) {
+                                if (!battle.map.cells[y][x]) {
+                                    battle.map.cells[y][x] = {
+                                        x,
+                                        y,
+                                        terrain: "Empty",
+                                    };
+                                }
+                            }
+                        }
+                    }
 
                     // Automatically register the map to the default campaign
                     try {
@@ -205,8 +226,7 @@ export class BattleStore {
                         );
                     }
                 }
-                // Don't change existing map size to avoid data loss
-                // Do reposition creatures if needed
+                // Reposition creatures if needed
                 for (const creature of battle.creatures) {
                     if (
                         creature.position &&

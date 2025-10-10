@@ -142,11 +142,6 @@ const StatusEffects = styled.div`
     }
 `;
 
-const Position = styled.div`
-    margin-top: ${({ theme }) => theme.spacing.sm};
-    font-size: ${({ theme }) => theme.typography.sizes.sm};
-    color: ${({ theme }) => theme.colors.text.secondary};
-`;
 
 interface CreatureTooltipProps {
     creature: Creature | null;

@@ -3,11 +3,11 @@ import styled from "styled-components";
 import type { BattleState, CommandPreset } from "./types";
 import { createBattle, getBattle, getAllBattles, executeCommand } from "./api";
 import BattleDisplay from "./components/BattleDisplay";
-import CommandForm, { CommandFormRef } from "./components/CommandForm";
+import CommandForm, { type CommandFormRef } from "./components/CommandForm";
 import CreatureTable from "./components/CreatureTable";
 import CampaignCreatureSearch from "./components/CampaignCreatureSearch";
 import BattleMapVisualization from "./components/BattleMapVisualization";
-import { useSSE, SSEMessage } from "./hooks/useSSE";
+import { useSSE, type SSEMessage } from "./hooks/useSSE";
 
 const AppContainer = styled.div`
     max-width: 1400px;
@@ -56,11 +56,11 @@ const SSEStatus = styled.div<{ connected: boolean }>`
     border-radius: ${({ theme }) => theme.radii.base};
     font-size: 0.875rem;
     background: ${({ connected, theme }) =>
-        connected ? theme.colors.success.background : theme.colors.warning.background};
+        connected ? theme.colors.status.success : theme.colors.status.warning};
     color: ${({ connected, theme }) =>
-        connected ? theme.colors.success.text : theme.colors.warning.text};
+        connected ? theme.colors.text.primary : theme.colors.text.primary};
     border: 1px solid ${({ connected, theme }) =>
-        connected ? theme.colors.success.border : theme.colors.warning.border};
+        connected ? theme.colors.status.success : theme.colors.status.warning};
 
     &::before {
         content: "${({ connected }) => connected ? '🟢' : '🟡'}";
@@ -315,7 +315,7 @@ function App() {
         }
     }, [currentBattle]);
 
-    const { isConnected: sseConnected, error: sseError } = useSSE({
+    const { isConnected: sseConnected } = useSSE({
         url: 'http://localhost:8000/api/events',
         battleId: currentBattle?.id,
         onMessage: handleSSEMessage,
