@@ -1,9 +1,18 @@
 import { Router } from "@oak/oak";
 import { BattleStore, HandlerFunction } from "./battle-store.ts";
 import { CampaignStore } from "./campaign-store.ts";
-import { APIResponse, ROUTE_CONFIGS, CommandType, CampaignCommandType } from "./types.ts";
+import {
+    APIResponse,
+    ROUTE_CONFIGS,
+    CommandType,
+    CampaignCommandType,
+} from "./types.ts";
+import { ImpossibleCommandError } from "./errors.ts";
 
-export function generateRoutes(battleStore: BattleStore, campaignStore: CampaignStore): Router {
+export function generateRoutes(
+    battleStore: BattleStore,
+    campaignStore: CampaignStore,
+): Router {
     const router = new Router();
 
     // Generate static CRUD routes
@@ -25,7 +34,12 @@ export function generateRoutes(battleStore: BattleStore, campaignStore: Campaign
             return;
         }
 
-        const battle = battleStore.createBattle(name, mode, mapSize, sceneDescription);
+        const battle = battleStore.createBattle(
+            name,
+            mode,
+            mapSize,
+            sceneDescription,
+        );
         ctx.response.body = { success: true, data: battle } as APIResponse;
     });
 
@@ -126,6 +140,14 @@ export function generateRoutes(battleStore: BattleStore, campaignStore: Campaign
                     data: result,
                 } as APIResponse;
             } catch (error) {
+                if (error instanceof ImpossibleCommandError) {
+                    ctx.response.status = 400;
+                    ctx.response.body = {
+                        success: false,
+                        error: `Impossible command: ${error.message}`,
+                    } as APIResponse;
+                    return;
+                }
                 console.error(`Error handling ${commandType}:`, error);
                 ctx.response.status = 500;
                 ctx.response.body = {
@@ -183,7 +205,10 @@ export function generateRoutes(battleStore: BattleStore, campaignStore: Campaign
         const body = await ctx.request.body.json();
         const { name, description } = body;
 
-        const campaign = campaignStore.updateCampaign(campaignId, { name, description });
+        const campaign = campaignStore.updateCampaign(campaignId, {
+            name,
+            description,
+        });
 
         if (!campaign) {
             ctx.response.status = 404;
@@ -217,44 +242,61 @@ export function generateRoutes(battleStore: BattleStore, campaignStore: Campaign
             ctx.response.status = 400;
             ctx.response.body = {
                 success: false,
-                error: error instanceof Error ? error.message : "Failed to delete campaign",
+                error:
+                    error instanceof Error
+                        ? error.message
+                        : "Failed to delete campaign",
             } as APIResponse;
         }
     });
 
     // Add creature from campaign to battle
-    router.post("/api/battles/:battleId/creatures/from-campaign/:campaignCreatureId", async (ctx) => {
-        const { battleId, campaignCreatureId } = ctx.params;
+    router.post(
+        "/api/battles/:battleId/creatures/from-campaign/:campaignCreatureId",
+        async (ctx) => {
+            const { battleId, campaignCreatureId } = ctx.params;
 
-        try {
-            const body = await ctx.request.body.json().catch(() => ({}));
-            const { position } = body;
+            try {
+                const body = await ctx.request.body.json().catch(() => ({}));
+                const { position } = body;
 
-            const battle = battleStore.addCreatureFromCampaign(battleId, campaignCreatureId, position);
+                const battle = battleStore.addCreatureFromCampaign(
+                    battleId,
+                    campaignCreatureId,
+                    position,
+                );
 
-            if (!battle) {
-                ctx.response.status = 404;
+                if (!battle) {
+                    ctx.response.status = 404;
+                    ctx.response.body = {
+                        success: false,
+                        error: "Battle or campaign creature not found",
+                    } as APIResponse;
+                    return;
+                }
+
+                ctx.response.body = {
+                    success: true,
+                    data: battle,
+                } as APIResponse;
+            } catch (error) {
+                ctx.response.status = 400;
                 ctx.response.body = {
                     success: false,
-                    error: "Battle or campaign creature not found",
+                    error:
+                        error instanceof Error
+                            ? error.message
+                            : "Failed to add creature from campaign",
                 } as APIResponse;
-                return;
             }
-
-            ctx.response.body = { success: true, data: battle } as APIResponse;
-        } catch (error) {
-            ctx.response.status = 400;
-            ctx.response.body = {
-                success: false,
-                error: error instanceof Error ? error.message : "Failed to add creature from campaign",
-            } as APIResponse;
-        }
-    });
+        },
+    );
 
     // Search endpoints
     router.get("/api/campaigns/creatures/search", (ctx) => {
         const query = ctx.request.url.searchParams.get("q") || "";
-        const campaignId = ctx.request.url.searchParams.get("campaignId") || undefined;
+        const campaignId =
+            ctx.request.url.searchParams.get("campaignId") || undefined;
 
         const results = campaignStore.searchCreatures(query, campaignId);
         ctx.response.body = { success: true, data: results } as APIResponse;
@@ -262,7 +304,8 @@ export function generateRoutes(battleStore: BattleStore, campaignStore: Campaign
 
     router.get("/api/campaigns/maps/search", (ctx) => {
         const query = ctx.request.url.searchParams.get("q") || "";
-        const campaignId = ctx.request.url.searchParams.get("campaignId") || undefined;
+        const campaignId =
+            ctx.request.url.searchParams.get("campaignId") || undefined;
 
         const results = campaignStore.searchMaps(query, campaignId);
         ctx.response.body = { success: true, data: results } as APIResponse;

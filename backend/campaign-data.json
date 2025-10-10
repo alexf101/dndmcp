@@ -29,8 +29,8 @@
             "isPlayer": false
           },
           "createdAt": 1759967982521,
-          "usageCount": 4,
-          "lastUsed": 1759971118039
+          "usageCount": 5,
+          "lastUsed": 1760058498925
         },
         {
           "id": "47c7ae3f-7cb8-4691-a1b1-77b9b19366c3",
@@ -55,8 +55,8 @@
             "isPlayer": true
           },
           "createdAt": 1759967997159,
-          "usageCount": 5,
-          "lastUsed": 1759971143240
+          "usageCount": 6,
+          "lastUsed": 1760058497580
         },
         {
           "id": "aa71448f-6c49-4fb1-adc5-45a39b510563",
@@ -81,7 +81,8 @@
             "isPlayer": false
           },
           "createdAt": 1759968198784,
-          "usageCount": 1
+          "usageCount": 2,
+          "lastUsed": 1760058500362
         },
         {
           "id": "6f68c978-7aa4-424c-a162-c3aa7217c697",
@@ -2841,10 +2842,184 @@
           },
           "createdAt": 1760050531406,
           "usageCount": 1
+        },
+        {
+          "id": "dac95aa3-1542-499c-aa92-9bcfd43ed1a4",
+          "name": "Battle map for undefined",
+          "description": "6x5 map from battle: Dragon's Lair",
+          "template": {
+            "width": 6,
+            "height": 5,
+            "cells": [
+              [
+                {
+                  "x": 0,
+                  "y": 0,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 1,
+                  "y": 0,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 2,
+                  "y": 0,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 3,
+                  "y": 0,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 4,
+                  "y": 0,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 5,
+                  "y": 0,
+                  "terrain": "Empty"
+                }
+              ],
+              [
+                {
+                  "x": 0,
+                  "y": 1,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 1,
+                  "y": 1,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 2,
+                  "y": 1,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 3,
+                  "y": 1,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 4,
+                  "y": 1,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 5,
+                  "y": 1,
+                  "terrain": "Empty"
+                }
+              ],
+              [
+                {
+                  "x": 0,
+                  "y": 2,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 1,
+                  "y": 2,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 2,
+                  "y": 2,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 3,
+                  "y": 2,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 4,
+                  "y": 2,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 5,
+                  "y": 2,
+                  "terrain": "Empty"
+                }
+              ],
+              [
+                {
+                  "x": 0,
+                  "y": 3,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 1,
+                  "y": 3,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 2,
+                  "y": 3,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 3,
+                  "y": 3,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 4,
+                  "y": 3,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 5,
+                  "y": 3,
+                  "terrain": "Empty"
+                }
+              ],
+              [
+                {
+                  "x": 0,
+                  "y": 4,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 1,
+                  "y": 4,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 2,
+                  "y": 4,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 3,
+                  "y": 4,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 4,
+                  "y": 4,
+                  "terrain": "Empty"
+                },
+                {
+                  "x": 5,
+                  "y": 4,
+                  "terrain": "Empty"
+                }
+              ]
+            ],
+            "description": "Battle map for undefined"
+          },
+          "createdAt": 1760058455765,
+          "usageCount": 1
         }
       ],
       "createdAt": 1759966347195,
-      "updatedAt": 1760050531406
+      "updatedAt": 1760058500362
     }
   ],
   "defaultCampaignId": "ec6549e8-ef55-4649-bd90-ead77cef9d7e"

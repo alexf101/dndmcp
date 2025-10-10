@@ -277,7 +277,6 @@ export type BattleCommand =
     | {
           type: "UPDATE_BATTLE";
           data: {
-              id: string;
               name?: string;
               mode?: BattleMode;
               mapSize?: { width: number; height: number };
@@ -342,6 +341,7 @@ export const COMMAND_TYPES = [
     "START_BATTLE",
     "UNDO",
     "CREATE_BATTLE",
+    "UPDATE_BATTLE",
     "SET_TERRAIN",
     "TOGGLE_DOOR",
     "UPDATE_SCENE_DESCRIPTION",
@@ -417,10 +417,10 @@ export const ROUTE_CONFIGS: Record<CommandType, RouteConfig> = {
         validation: ["name"],
     },
     UPDATE_BATTLE: {
-        path: "/api/battles",
+        path: "/api/battles/:id",
         method: "PUT",
+        pathParams: ["id"],
         bodyExtractor: "body",
-        validation: ["id"],
     },
     SET_TERRAIN: {
         path: "/api/battles/:id/map/terrain",

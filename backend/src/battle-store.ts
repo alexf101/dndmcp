@@ -12,6 +12,14 @@ import {
     isValidPosition,
 } from "./types.ts";
 import { CampaignStore } from "./campaign-store.ts";
+import { ImpossibleCommandError } from "./errors.ts";
+
+const BATTLE_DATA_FILE = "./battle-data.json";
+
+interface BattleStoreState {
+    battles: Record<string, BattleState>;
+    actionIdCounter: number;
+}
 
 export type HandlerFunction = (
     // deno-lint-ignore no-explicit-any
@@ -22,9 +30,56 @@ export class BattleStore {
     private battles: Map<string, BattleState> = new Map();
     private actionIdCounter = 0;
     private campaignStore: CampaignStore;
+    private saveTimeout: number | null = null;
 
     constructor(campaignStore: CampaignStore) {
         this.campaignStore = campaignStore;
+        this.loadFromFile();
+    }
+
+    private loadFromFile() {
+        try {
+            const data = Deno.readTextFileSync(BATTLE_DATA_FILE);
+            const state: BattleStoreState = JSON.parse(data);
+
+            // Convert battles object back to Map
+            this.battles = new Map(Object.entries(state.battles));
+            this.actionIdCounter = state.actionIdCounter;
+
+            console.log(`📖 Battle data loaded from ${BATTLE_DATA_FILE}`);
+            console.log(`   - ${this.battles.size} battles loaded`);
+            console.log(`   - Action counter at ${this.actionIdCounter}`);
+        } catch (error) {
+            if (error instanceof Deno.errors.NotFound) {
+                console.log(
+                    `📖 No existing battle data file found, starting fresh`,
+                );
+            } else {
+                console.error("Failed to load battle data:", error);
+            }
+        }
+    }
+
+    private saveToFile() {
+        // Debounce saves to avoid excessive file I/O
+        if (this.saveTimeout) {
+            clearTimeout(this.saveTimeout);
+        }
+
+        this.saveTimeout = setTimeout(() => {
+            try {
+                const state: BattleStoreState = {
+                    battles: Object.fromEntries(this.battles),
+                    actionIdCounter: this.actionIdCounter,
+                };
+                const data = JSON.stringify(state, null, 2);
+                Deno.writeTextFileSync(BATTLE_DATA_FILE, data);
+                console.log(`💾 Battle data saved to ${BATTLE_DATA_FILE}`);
+            } catch (error) {
+                console.error("Failed to save battle data:", error);
+            }
+            this.saveTimeout = null;
+        }, 1000); // Save after 1 second of inactivity
     }
 
     createBattle(
@@ -71,19 +126,27 @@ export class BattleStore {
             }
         }
 
+        this.saveToFile();
         return battle;
     }
 
     updateBattle(
-        id: string,
-        name?: string,
-        mode?: BattleMode,
-        mapSize?: { width: number; height: number },
-        sceneDescription?: string,
+        battleId: string,
+        {
+            name,
+            mode,
+            mapSize,
+            sceneDescription,
+        }: {
+            name?: string;
+            mode?: BattleMode;
+            mapSize?: { width: number; height: number };
+            sceneDescription?: string;
+        },
     ): BattleState {
-        const battle = this.battles.get(id);
+        const battle = this.battles.get(battleId);
         if (!battle) {
-            console.error(`Battle with ID ${id} not found`);
+            console.error(`Battle with ID ${battleId} not found`);
             console.info(`All battle IDs:`, Array.from(this.battles.keys()));
             throw new Error("Battle not found");
         }
@@ -153,6 +216,7 @@ export class BattleStore {
             }
         }
 
+        this.saveToFile();
         return battle;
     }
 
@@ -214,6 +278,7 @@ export class BattleStore {
             );
         }
 
+        this.saveToFile();
         return battle;
     }
 
@@ -244,6 +309,7 @@ export class BattleStore {
         };
         battle.history.push(action);
 
+        this.saveToFile();
         return battle;
     }
 
@@ -262,6 +328,7 @@ export class BattleStore {
         battle.creatures = battle.creatures.filter((c) => c.id !== creatureId);
         battle.history.push(action);
 
+        this.saveToFile();
         return battle;
     }
 
@@ -286,6 +353,7 @@ export class BattleStore {
         }
         battle.history.push(action);
 
+        this.saveToFile();
         return battle;
     }
 
@@ -298,6 +366,7 @@ export class BattleStore {
             Object.assign(battle, lastAction.previousState);
         }
 
+        this.saveToFile();
         return battle;
     }
 
@@ -309,6 +378,7 @@ export class BattleStore {
         battle.currentTurn = 0;
         battle.round = 1;
 
+        this.saveToFile();
         return battle;
     }
 
@@ -324,7 +394,9 @@ export class BattleStore {
 
         // Only grid-based battles support movement
         if (battle.mode !== "GridBased" || !battle.map) {
-            throw new Error("Movement is only supported in grid-based battles");
+            throw new ImpossibleCommandError(
+                "Movement is only supported in grid-based battles",
+            );
         }
 
         const creatureIndex = battle.creatures.findIndex(
@@ -344,7 +416,7 @@ export class BattleStore {
             battle.creatures,
         );
         if (!positionCheck.canOccupy) {
-            throw new Error(
+            throw new ImpossibleCommandError(
                 `Cannot move creature to position: ${positionCheck.reason}`,
             );
         }
@@ -363,6 +435,7 @@ export class BattleStore {
         };
         battle.history.push(action);
 
+        this.saveToFile();
         return battle;
     }
 
@@ -583,6 +656,7 @@ export class BattleStore {
         battle.creatures.sort((a, b) => b.initiative - a.initiative);
         battle.history.push(action);
 
+        this.saveToFile();
         return battle;
     }
 
@@ -606,6 +680,7 @@ export class BattleStore {
         battle.sceneDescription = data.description;
         battle.history.push(action);
 
+        this.saveToFile();
         return battle;
     }
 
@@ -627,6 +702,7 @@ export class BattleStore {
         battle.creaturePositions = data.positions;
         battle.history.push(action);
 
+        this.saveToFile();
         return battle;
     }
 
