@@ -38,8 +38,6 @@ const server = new Server(
     },
 );
 
-console.log("TOOLS: ", TOOLS);
-
 // Register tools (generated from route configs)
 server.setRequestHandler(ListToolsRequestSchema, async () => {
     return {

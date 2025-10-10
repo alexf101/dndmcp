@@ -2,7 +2,8 @@
   "tasks": {
     "mcp": "deno run --allow-all mcp-server.ts",
     "backend": "cd backend && deno run --allow-net --allow-read --allow-write --allow-env src/main.ts",
-    "test": "cd backend && deno test --allow-read --allow-write --allow-env"
+    "test": "cd backend && deno test --allow-read --allow-write --allow-env",
+    "test:mcp": "cd backend && deno test --no-check --allow-read --allow-write --allow-env src/mcp-integration.test.ts"
   },
   "imports": {
     "@modelcontextprotocol/sdk/": "npm:@modelcontextprotocol/sdk@latest/"
