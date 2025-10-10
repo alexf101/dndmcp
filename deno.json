@@ -1,0 +1,27 @@
+{
+  "tasks": {
+    "mcp": "deno run --allow-all mcp-server.ts",
+    "backend": "cd backend && deno run --allow-net --allow-read --allow-write --allow-env src/main.ts",
+    "test": "cd backend && deno test --allow-read --allow-write --allow-env"
+  },
+  "imports": {
+    "@modelcontextprotocol/sdk/": "npm:@modelcontextprotocol/sdk@latest/"
+  },
+  "compilerOptions": {
+    "allowJs": true,
+    "lib": ["deno.window"],
+    "strict": true
+  },
+  "fmt": {
+    "files": {
+      "include": ["./**/*.ts", "./**/*.tsx", "./**/*.js", "./**/*.jsx"],
+      "exclude": ["./node_modules/", "./frontend/node_modules/", "./frontend/dist/"]
+    }
+  },
+  "lint": {
+    "files": {
+      "include": ["./**/*.ts", "./**/*.tsx", "./**/*.js", "./**/*.jsx"],
+      "exclude": ["./node_modules/", "./frontend/node_modules/", "./frontend/dist/"]
+    }
+  }
+}

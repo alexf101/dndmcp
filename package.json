@@ -1,0 +1,31 @@
+{
+  "name": "dnd-battle-manager-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for D&D 5e battle management system",
+  "main": "mcp-server.ts",
+  "type": "module",
+  "scripts": {
+    "mcp": "deno run --allow-all mcp-server.ts",
+    "build": "cd frontend && npm run build",
+    "dev": "cd frontend && npm run dev",
+    "backend": "cd backend && deno run --allow-net --allow-read --allow-write --allow-env src/main.ts",
+    "test": "cd backend && deno test --allow-read --allow-write --allow-env"
+  },
+  "bin": {
+    "dnd-battle-manager": "./mcp-server.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "latest"
+  },
+  "keywords": ["mcp", "dnd", "battle-manager", "rpg", "tabletop"],
+  "author": "DnD MCP Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/user/dnd-battle-manager-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/user/dnd-battle-manager-mcp/issues"
+  },
+  "homepage": "https://github.com/user/dnd-battle-manager-mcp#readme"
+}
