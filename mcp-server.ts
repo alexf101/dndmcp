@@ -8,6 +8,7 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 import { BattleStore } from "./backend/src/battle-store.ts";
 import { CampaignStore } from "./backend/src/campaign-store.ts";
+import { DiceStore } from "./backend/src/dice-store.ts";
 import {
     generateAllMCPTools,
     generateToolCommandMapping,
@@ -18,9 +19,10 @@ import { logger } from "./backend/src/logger.ts";
 // Initialize stores
 const campaignStore = new CampaignStore();
 const battleStore = new BattleStore(campaignStore);
+const diceStore = new DiceStore();
 
 // Create universal handler
-const handler = createUniversalHandler(battleStore, campaignStore);
+const handler = createUniversalHandler(battleStore, campaignStore, diceStore);
 
 // Generate tools from route configurations
 const TOOLS = generateAllMCPTools();
@@ -211,6 +213,17 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             case "ADD_CREATURE_FROM_CAMPAIGN": {
                 const battle = result.data as any;
                 responseText = `Added creature from campaign template to battle "${battle.name}"`;
+                break;
+            }
+
+            case "ROLL_DICE": {
+                const roll = result.data as any;
+                const rollDetails = roll.rolls.length > 1
+                    ? ` (${roll.rolls.join(", ")})`
+                    : "";
+                const modifierText = roll.modifier !== 0 ? ` with modifier ${roll.modifier >= 0 ? "+" : ""}${roll.modifier}` : "";
+                const descriptionText = roll.description ? `**${roll.description}**\n` : "";
+                responseText = `${descriptionText}🎲 Rolled ${roll.notation}${rollDetails}${modifierText}\n**Total: ${roll.total}**`;
                 break;
             }
 

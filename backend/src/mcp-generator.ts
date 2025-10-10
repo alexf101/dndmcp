@@ -420,6 +420,30 @@ export function generateAllMCPTools(): MCPTool[] {
         },
     });
 
+    tools.push({
+        name: "roll_dice",
+        description: "Roll dice using D&D notation (e.g., '2d20', '1d6+3', '4d6kh3' for advantage/ability scores)",
+        inputSchema: {
+            type: "object",
+            properties: {
+                dice: {
+                    type: "string",
+                    description: "Dice notation (e.g., '1d20', '2d6+3', '2d20kh1' for advantage, '4d6kh3' for ability scores). Supports d4, d6, d8, d10, d12, d20, d100.",
+                },
+                modifier: {
+                    type: "number",
+                    description: "Additional modifier to add to the roll (optional)",
+                },
+                description: {
+                    type: "string",
+                    description: "Description of what this roll is for (e.g., 'Attack roll', 'Strength save')",
+                },
+            },
+            required: ["dice"],
+            additionalProperties: false,
+        },
+    });
+
     return tools;
 }
 
@@ -444,6 +468,7 @@ export function generateToolCommandMapping(): Record<string, CommandType | Campa
     mapping["get_battle"] = "GET_BATTLE";
     mapping["list_campaigns"] = "LIST_CAMPAIGNS";
     mapping["search_campaign_creatures"] = "SEARCH_CAMPAIGN_CREATURES";
+    mapping["roll_dice"] = "ROLL_DICE";
 
     return mapping;
 }

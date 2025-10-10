@@ -7,6 +7,7 @@ import CommandForm, { type CommandFormRef } from "./components/CommandForm";
 import CreatureTable from "./components/CreatureTable";
 import CampaignCreatureSearch from "./components/CampaignCreatureSearch";
 import BattleMapVisualization from "./components/BattleMapVisualization";
+import DiceRoller from "./components/DiceRoller";
 import { useSSE, type SSEMessage } from "./hooks/useSSE";
 
 const AppContainer = styled.div`
@@ -277,6 +278,8 @@ function App() {
     const [highlightedCreatureId, setHighlightedCreatureId] = useState<string | null>(null);
     const commandFormRef = useRef<CommandFormRef>(null);
 
+    const [diceRollCallback, setDiceRollCallback] = useState<((roll: any) => void) | null>(null);
+
     // SSE connection for real-time updates
     const handleSSEMessage = useCallback((message: SSEMessage) => {
         switch (message.type) {
@@ -309,11 +312,18 @@ function App() {
                 }
                 break;
 
+            case 'dice_rolled':
+                if (message.roll && diceRollCallback) {
+                    console.log('🎲 Dice roll received from SSE');
+                    diceRollCallback(message.roll);
+                }
+                break;
+
             case 'connected':
                 console.log('🎯 SSE Connected to D&D Battle Manager');
                 break;
         }
-    }, [currentBattle]);
+    }, [currentBattle, diceRollCallback]);
 
     const { isConnected: sseConnected } = useSSE({
         url: 'http://localhost:8000/api/events',
@@ -507,6 +517,11 @@ function App() {
                 </LeftPanel>
 
                 <RightPanel>
+                    <DiceRoller
+                        onRegisterRollHandler={(handler) => {
+                            setDiceRollCallback(() => handler);
+                        }}
+                    />
                     <CampaignCreatureSearch
                         currentBattle={currentBattle}
                         onCreatureAdded={handleCreatureAdded}

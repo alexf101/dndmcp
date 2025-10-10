@@ -27,8 +27,6 @@ const MapGrid = styled.div<{ width: number; height: number }>`
     display: grid;
     grid-template-columns: repeat(${(props) => props.width}, 1fr);
     grid-template-rows: repeat(${(props) => props.height}, 1fr);
-    gap: 1px;
-    background: ${({ theme }) => theme.colors.interactive.border};
     border: 2px solid ${({ theme }) => theme.colors.interactive.border};
     max-width: 100%;
     aspect-ratio: ${(props) => props.width / props.height};
@@ -51,6 +49,8 @@ const MapCell = styled.div<{
     justify-content: center;
     font-size: 10px;
     font-weight: bold;
+    border: 1px solid ${({ theme }) => theme.colors.interactive.border};
+    box-sizing: border-box;
 
     ${(props) => {
         switch (props.terrain) {

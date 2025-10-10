@@ -122,6 +122,22 @@ export class SSEManager {
         logger.debug(`Broadcasted battle list update to ${this.clients.size} clients`);
     }
 
+    // Broadcast dice roll to all clients
+    broadcastDiceRoll(roll: any) {
+        const message = {
+            type: "dice_rolled",
+            roll,
+            timestamp: Date.now(),
+        };
+
+        // Send to all clients
+        for (const client of this.clients.values()) {
+            this.sendToClient(client, message);
+        }
+
+        logger.debug(`Broadcasted dice roll to ${this.clients.size} clients`);
+    }
+
     // Get number of clients watching a specific battle
     private getClientCount(battleId?: string): number {
         let count = 0;

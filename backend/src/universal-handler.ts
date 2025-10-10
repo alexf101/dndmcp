@@ -1,5 +1,6 @@
 import { BattleStore } from "./battle-store.ts";
 import { CampaignStore } from "./campaign-store.ts";
+import type { DiceStore } from "./dice-store.ts";
 import type {
     CommandType,
     CampaignCommandType,
@@ -10,6 +11,7 @@ import type {
     CAMPAIGN_ROUTE_CONFIGS,
 } from "../../shared/types.ts";
 import { ImpossibleCommandError } from "./errors.ts";
+import { rollDice } from "./dice-roller.ts";
 
 // Result type for universal handler
 export interface HandlerResult {
@@ -23,6 +25,7 @@ export class UniversalHandler {
     constructor(
         private battleStore: BattleStore,
         private campaignStore: CampaignStore,
+        private diceStore?: DiceStore,
     ) {}
 
     // Main dispatch method
@@ -288,6 +291,28 @@ export class UniversalHandler {
                     return { success: true, data: creatures };
                 }
 
+                // Dice rolling
+                case "ROLL_DICE": {
+                    const { dice, modifier = 0, description } = args as {
+                        dice: string;
+                        modifier?: number;
+                        description?: string;
+                    };
+                    try {
+                        const result = rollDice(dice, modifier, description);
+                        // Add to history and broadcast if diceStore is available
+                        if (this.diceStore) {
+                            this.diceStore.addRoll(result);
+                        }
+                        return { success: true, data: result };
+                    } catch (error) {
+                        return {
+                            success: false,
+                            error: error instanceof Error ? error.message : "Invalid dice notation",
+                        };
+                    }
+                }
+
                 default:
                     return {
                         success: false,
@@ -349,6 +374,7 @@ export class UniversalHandler {
 export function createUniversalHandler(
     battleStore: BattleStore,
     campaignStore: CampaignStore,
+    diceStore?: DiceStore,
 ): UniversalHandler {
-    return new UniversalHandler(battleStore, campaignStore);
+    return new UniversalHandler(battleStore, campaignStore, diceStore);
 }

@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 
 export interface SSEMessage {
-    type: "connected" | "battle_updated" | "battle_list_updated" | "ping";
+    type: "connected" | "battle_updated" | "battle_list_updated" | "dice_rolled" | "ping";
     clientId?: string;
     battleId?: string;
     battleState?: any;
     battles?: any[];
+    roll?: any;
     timestamp: number;
 }
 

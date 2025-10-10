@@ -9,10 +9,14 @@ import {
 } from "./types.ts";
 import { ImpossibleCommandError } from "./errors.ts";
 import { sseManager } from "./sse-manager.ts";
+import { rollDice } from "./dice-roller.ts";
+
+import type { DiceStore } from "./dice-store.ts";
 
 export function generateRoutes(
     battleStore: BattleStore,
     campaignStore: CampaignStore,
+    diceStore: DiceStore,
 ): Router {
     const router = new Router();
 
@@ -310,6 +314,40 @@ export function generateRoutes(
 
         const results = campaignStore.searchMaps(query, campaignId);
         ctx.response.body = { success: true, data: results } as APIResponse;
+    });
+
+    // Dice rolling endpoint
+    router.post("/api/dice/roll", async (ctx) => {
+        const body = await ctx.request.body.json();
+        const { dice, modifier = 0, description } = body;
+
+        if (!dice || typeof dice !== "string") {
+            ctx.response.status = 400;
+            ctx.response.body = {
+                success: false,
+                error: "Dice notation required (e.g., '2d20', '1d6+3', '4d6kh3')",
+            } as APIResponse;
+            return;
+        }
+
+        try {
+            const result = rollDice(dice, modifier, description);
+            diceStore.addRoll(result); // Add to history and broadcast via SSE
+            ctx.response.body = { success: true, data: result } as APIResponse;
+        } catch (error) {
+            ctx.response.status = 400;
+            ctx.response.body = {
+                success: false,
+                error: error instanceof Error ? error.message : "Invalid dice notation",
+            } as APIResponse;
+        }
+    });
+
+    // Get dice roll history
+    router.get("/api/dice/rolls", (ctx) => {
+        const limit = ctx.request.url.searchParams.get("limit");
+        const rolls = diceStore.getAllRolls(limit ? parseInt(limit) : undefined);
+        ctx.response.body = { success: true, data: rolls } as APIResponse;
     });
 
     // SSE Routes for real-time updates
