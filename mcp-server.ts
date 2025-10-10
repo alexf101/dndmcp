@@ -13,6 +13,7 @@ import {
     generateToolCommandMapping,
 } from "./backend/src/mcp-generator.ts";
 import { createUniversalHandler } from "./backend/src/universal-handler.ts";
+import { logger } from "./backend/src/logger.ts";
 
 // Initialize stores
 const campaignStore = new CampaignStore();
@@ -248,9 +249,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 async function main() {
     const transport = new StdioServerTransport();
     await server.connect(transport);
-    console.error("D&D Battle Manager MCP Server running");
+    logger.info("D&D Battle Manager MCP Server running");
 }
 
 if (import.meta.main) {
-    main().catch(console.error);
+    main().catch(logger.error);
 }

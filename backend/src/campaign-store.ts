@@ -7,6 +7,7 @@ import {
     Creature,
     BattleMap,
 } from "./types.ts";
+import { logger } from "./logger.ts";
 
 const CAMPAIGN_DATA_FILE = "./campaign-data.json";
 const DEFAULT_CAMPAIGN_NAME = "Default Campaign";
@@ -38,7 +39,7 @@ export class CampaignStore {
 
             return parsed;
         } catch (error) {
-            console.log(
+            logger.info(
                 `Creating new campaign data file (${
                     error instanceof Error ? error.message : "file not found"
                 })`,
@@ -107,9 +108,9 @@ export class CampaignStore {
             try {
                 const data = JSON.stringify(this.state, null, 2);
                 Deno.writeTextFileSync(CAMPAIGN_DATA_FILE, data);
-                console.log(`💾 Campaign data saved to ${CAMPAIGN_DATA_FILE}`);
+                logger.info(`💾 Campaign data saved to ${CAMPAIGN_DATA_FILE}`);
             } catch (error) {
-                console.error("Failed to save campaign data:", error);
+                logger.error("Failed to save campaign data:", error);
             }
             this.saveTimeout = null;
         }, 1000); // Save after 1 second of inactivity

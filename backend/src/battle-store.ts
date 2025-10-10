@@ -14,6 +14,7 @@ import {
 } from "./types.ts";
 import { CampaignStore } from "./campaign-store.ts";
 import { ImpossibleCommandError } from "./errors.ts";
+import { logger } from "./logger.ts";
 
 const BATTLE_DATA_FILE = "./battle-data.json";
 
@@ -51,16 +52,16 @@ export class BattleStore {
             this.battles = new Map(Object.entries(state.battles));
             this.actionIdCounter = state.actionIdCounter;
 
-            console.log(`📖 Battle data loaded from ${BATTLE_DATA_FILE}`);
-            console.log(`   - ${this.battles.size} battles loaded`);
-            console.log(`   - Action counter at ${this.actionIdCounter}`);
+            logger.info(`📖 Battle data loaded from ${BATTLE_DATA_FILE}`);
+            logger.info(`   - ${this.battles.size} battles loaded`);
+            logger.info(`   - Action counter at ${this.actionIdCounter}`);
         } catch (error) {
             if (error instanceof Deno.errors.NotFound) {
-                console.log(
+                logger.info(
                     `📖 No existing battle data file found, starting fresh`,
                 );
             } else {
-                console.error("Failed to load battle data:", error);
+                logger.error("Failed to load battle data:", error);
             }
         }
     }
@@ -83,9 +84,9 @@ export class BattleStore {
                 };
                 const data = JSON.stringify(state, null, 2);
                 Deno.writeTextFileSync(BATTLE_DATA_FILE, data);
-                console.log(`💾 Battle data saved to ${BATTLE_DATA_FILE}`);
+                logger.info(`💾 Battle data saved to ${BATTLE_DATA_FILE}`);
             } catch (error) {
-                console.error("Failed to save battle data:", error);
+                logger.error("Failed to save battle data:", error);
             }
             this.saveTimeout = null;
         }, 1000); // Save after 1 second of inactivity
@@ -128,7 +129,7 @@ export class BattleStore {
             try {
                 this.campaignStore.addMapToDefaultCampaign(map, battle);
             } catch (error) {
-                console.warn(
+                logger.warn(
                     "Failed to register map to default campaign:",
                     error,
                 );
@@ -155,8 +156,8 @@ export class BattleStore {
     ): BattleState {
         const battle = this.battles.get(battleId);
         if (!battle) {
-            console.error(`Battle with ID ${battleId} not found`);
-            console.info(`All battle IDs:`, Array.from(this.battles.keys()));
+            logger.error(`Battle with ID ${battleId} not found`);
+            logger.info(`All battle IDs:`, Array.from(this.battles.keys()));
             throw new Error("Battle not found");
         }
 
@@ -181,7 +182,7 @@ export class BattleStore {
                             battle,
                         );
                     } catch (error) {
-                        console.warn(
+                        logger.warn(
                             "Failed to register map to default campaign:",
                             error,
                         );
@@ -210,7 +211,7 @@ export class BattleStore {
                             ),
                         );
                         // If no position found, remove position (will need manual placement)
-                        console.warn(
+                        logger.warn(
                             `No valid position found for creature ${creature.id}. Manual placement required.`,
                         );
                         creature.position = newPos || undefined;
@@ -281,7 +282,7 @@ export class BattleStore {
                 battle,
             );
         } catch (error) {
-            console.warn(
+            logger.warn(
                 "Failed to register creature to default campaign:",
                 error,
             );
@@ -583,19 +584,19 @@ export class BattleStore {
         campaignCreatureId: string,
         position?: GridPosition,
     ): BattleState | null {
-        console.log("=== addCreatureFromCampaign called ===");
-        console.log("battleId:", battleId);
-        console.log("campaignCreatureId:", campaignCreatureId);
-        console.log("position:", position);
-        console.log("position type:", typeof position);
-        console.log("position === undefined:", position === undefined);
-        console.log("position === null:", position === null);
+        logger.debug("=== addCreatureFromCampaign called ===");
+        logger.debug("battleId:", battleId);
+        logger.debug("campaignCreatureId:", campaignCreatureId);
+        logger.debug("position:", position);
+        logger.debug("position type:", typeof position);
+        logger.debug("position === undefined:", position === undefined);
+        logger.debug("position === null:", position === null);
 
         const battle = this.battles.get(battleId);
         if (!battle) return null;
 
-        console.log("Battle mode:", battle.mode);
-        console.log("Battle has map:", !!battle.map);
+        logger.debug("Battle mode:", battle.mode);
+        logger.debug("Battle has map:", !!battle.map);
 
         let finalPosition: GridPosition | null | undefined = position;
 
@@ -608,7 +609,7 @@ export class BattleStore {
             const campaignCreature =
                 this.campaignStore.getCampaignCreature(campaignCreatureId);
             const creatureSize = campaignCreature?.template.size || "Medium";
-            console.log(
+            logger.debug(
                 `Auto-placing ${
                     campaignCreature?.name || "creature"
                 } (${creatureSize}) on ${battle.map.width}x${
@@ -622,7 +623,7 @@ export class BattleStore {
                 battle.creatures,
             );
 
-            console.log(`Found position:`, finalPosition);
+            logger.debug(`Found position:`, finalPosition);
 
             if (!finalPosition) {
                 throw new Error(
