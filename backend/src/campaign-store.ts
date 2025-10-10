@@ -5,7 +5,7 @@ import {
     CampaignMap,
     BattleState,
     Creature,
-    BattleMap
+    BattleMap,
 } from "./types.ts";
 
 const CAMPAIGN_DATA_FILE = "./campaign-data.json";
@@ -23,6 +23,10 @@ export class CampaignStore {
     // === Persistence Methods ===
 
     private loadFromFile(): CampaignState {
+        if (Deno.env.get("DISABLE_SAVES") === "true") {
+            // Don't save to file during tests
+            return this.createInitialState();
+        }
         try {
             const data = Deno.readTextFileSync(CAMPAIGN_DATA_FILE);
             const parsed = JSON.parse(data) as CampaignState;
@@ -34,7 +38,11 @@ export class CampaignStore {
 
             return parsed;
         } catch (error) {
-            console.log(`Creating new campaign data file (${error instanceof Error ? error.message : 'file not found'})`);
+            console.log(
+                `Creating new campaign data file (${
+                    error instanceof Error ? error.message : "file not found"
+                })`,
+            );
             return this.createInitialState();
         }
     }
@@ -43,7 +51,8 @@ export class CampaignStore {
         const defaultCampaign: Campaign = {
             id: crypto.randomUUID(),
             name: DEFAULT_CAMPAIGN_NAME,
-            description: "Automatically managed default campaign for all created content",
+            description:
+                "Automatically managed default campaign for all created content",
             isDefault: true,
             creatures: [],
             maps: [],
@@ -60,12 +69,15 @@ export class CampaignStore {
     private ensureDefaultCampaign(): void {
         if (!this.state.defaultCampaignId || !this.getDefaultCampaign()) {
             // Create default campaign if it doesn't exist
-            const defaultCampaign = this.state.campaigns.find(c => c.isDefault);
+            const defaultCampaign = this.state.campaigns.find(
+                (c) => c.isDefault,
+            );
             if (!defaultCampaign) {
                 const newDefault: Campaign = {
                     id: crypto.randomUUID(),
                     name: DEFAULT_CAMPAIGN_NAME,
-                    description: "Automatically managed default campaign for all created content",
+                    description:
+                        "Automatically managed default campaign for all created content",
                     isDefault: true,
                     creatures: [],
                     maps: [],
@@ -82,6 +94,10 @@ export class CampaignStore {
     }
 
     private saveToFile(): void {
+        if (Deno.env.get("DISABLE_SAVES") === "true") {
+            // Don't save to file during tests
+            return;
+        }
         // Debounce saves to avoid excessive file I/O
         if (this.saveTimeout) {
             clearTimeout(this.saveTimeout);
@@ -106,7 +122,7 @@ export class CampaignStore {
     }
 
     getCampaign(id: string): Campaign | null {
-        return this.state.campaigns.find(c => c.id === id) || null;
+        return this.state.campaigns.find((c) => c.id === id) || null;
     }
 
     getDefaultCampaign(): Campaign | null {
@@ -130,7 +146,10 @@ export class CampaignStore {
         return campaign;
     }
 
-    updateCampaign(id: string, updates: { name?: string; description?: string }): Campaign | null {
+    updateCampaign(
+        id: string,
+        updates: { name?: string; description?: string },
+    ): Campaign | null {
         const campaign = this.getCampaign(id);
         if (!campaign) return null;
 
@@ -146,7 +165,7 @@ export class CampaignStore {
     }
 
     deleteCampaign(id: string): boolean {
-        const index = this.state.campaigns.findIndex(c => c.id === id);
+        const index = this.state.campaigns.findIndex((c) => c.id === id);
         if (index === -1) return false;
 
         const campaign = this.state.campaigns[index];
@@ -171,7 +190,10 @@ export class CampaignStore {
 
     // === Creature Management ===
 
-    addCreatureToDefaultCampaign(creature: Creature, battleState?: BattleState): CampaignCreature {
+    addCreatureToDefaultCampaign(
+        creature: Creature,
+        battleState?: BattleState,
+    ): CampaignCreature {
         const defaultCampaign = this.getDefaultCampaign();
         if (!defaultCampaign) {
             throw new Error("Default campaign not found");
@@ -181,7 +203,9 @@ export class CampaignStore {
         const campaignCreature: CampaignCreature = {
             id: crypto.randomUUID(),
             name: creature.name,
-            description: battleState ? `From battle: ${battleState.name}` : undefined,
+            description: battleState
+                ? `From battle: ${battleState.name}`
+                : undefined,
             template: {
                 name: creature.name,
                 hp: creature.maxHp, // Reset to full health for template
@@ -203,7 +227,10 @@ export class CampaignStore {
         return campaignCreature;
     }
 
-    addMapToDefaultCampaign(map: BattleMap, battleState: BattleState): CampaignMap {
+    addMapToDefaultCampaign(
+        map: BattleMap,
+        battleState: BattleState,
+    ): CampaignMap {
         const defaultCampaign = this.getDefaultCampaign();
         if (!defaultCampaign) {
             throw new Error("Default campaign not found");
@@ -216,7 +243,7 @@ export class CampaignStore {
             template: {
                 width: map.width,
                 height: map.height,
-                cells: map.cells.map(row => row.map(cell => ({ ...cell }))), // Deep copy
+                cells: map.cells.map((row) => row.map((cell) => ({ ...cell }))), // Deep copy
                 description: map.description,
             },
             createdAt: Date.now(),
@@ -229,10 +256,15 @@ export class CampaignStore {
         return campaignMap;
     }
 
-    createCreatureFromCampaign(campaignCreatureId: string, position?: { x: number; y: number }): Creature | null {
+    createCreatureFromCampaign(
+        campaignCreatureId: string,
+        position?: { x: number; y: number },
+    ): Creature | null {
         // Find the creature across all campaigns
         for (const campaign of this.state.campaigns) {
-            const campaignCreature = campaign.creatures.find(c => c.id === campaignCreatureId);
+            const campaignCreature = campaign.creatures.find(
+                (c) => c.id === campaignCreatureId,
+            );
             if (campaignCreature) {
                 // Update usage stats
                 campaignCreature.usageCount++;
@@ -254,13 +286,19 @@ export class CampaignStore {
         return null;
     }
 
-    moveCreatureToCampaign(creatureId: string, sourceCampaignId: string, targetCampaignId: string): boolean {
+    moveCreatureToCampaign(
+        creatureId: string,
+        sourceCampaignId: string,
+        targetCampaignId: string,
+    ): boolean {
         const sourceCampaign = this.getCampaign(sourceCampaignId);
         const targetCampaign = this.getCampaign(targetCampaignId);
 
         if (!sourceCampaign || !targetCampaign) return false;
 
-        const creatureIndex = sourceCampaign.creatures.findIndex(c => c.id === creatureId);
+        const creatureIndex = sourceCampaign.creatures.findIndex(
+            (c) => c.id === creatureId,
+        );
         if (creatureIndex === -1) return false;
 
         const creature = sourceCampaign.creatures.splice(creatureIndex, 1)[0];
@@ -272,13 +310,17 @@ export class CampaignStore {
         return true;
     }
 
-    moveMapToCampaign(mapId: string, sourceCampaignId: string, targetCampaignId: string): boolean {
+    moveMapToCampaign(
+        mapId: string,
+        sourceCampaignId: string,
+        targetCampaignId: string,
+    ): boolean {
         const sourceCampaign = this.getCampaign(sourceCampaignId);
         const targetCampaign = this.getCampaign(targetCampaignId);
 
         if (!sourceCampaign || !targetCampaign) return false;
 
-        const mapIndex = sourceCampaign.maps.findIndex(m => m.id === mapId);
+        const mapIndex = sourceCampaign.maps.findIndex((m) => m.id === mapId);
         if (mapIndex === -1) return false;
 
         const map = sourceCampaign.maps.splice(mapIndex, 1)[0];
@@ -293,7 +335,9 @@ export class CampaignStore {
     getCampaignCreature(creatureId: string): CampaignCreature | null {
         // Find the creature across all campaigns
         for (const campaign of this.state.campaigns) {
-            const campaignCreature = campaign.creatures.find(c => c.id === creatureId);
+            const campaignCreature = campaign.creatures.find(
+                (c) => c.id === creatureId,
+            );
             if (campaignCreature) {
                 return campaignCreature;
             }
@@ -304,13 +348,18 @@ export class CampaignStore {
     // === Search and Query Methods ===
 
     searchCreatures(query: string, campaignId?: string): CampaignCreature[] {
-        const campaigns = campaignId ? [this.getCampaign(campaignId)].filter(Boolean) : this.state.campaigns;
+        const campaigns = campaignId
+            ? [this.getCampaign(campaignId)].filter(Boolean)
+            : this.state.campaigns;
         const results: CampaignCreature[] = [];
 
         for (const campaign of campaigns) {
-            const matches = campaign!.creatures.filter(creature =>
-                creature.name.toLowerCase().includes(query.toLowerCase()) ||
-                creature.description?.toLowerCase().includes(query.toLowerCase())
+            const matches = campaign!.creatures.filter(
+                (creature) =>
+                    creature.name.toLowerCase().includes(query.toLowerCase()) ||
+                    creature.description
+                        ?.toLowerCase()
+                        .includes(query.toLowerCase()),
             );
             results.push(...matches);
         }
@@ -325,13 +374,18 @@ export class CampaignStore {
     }
 
     searchMaps(query: string, campaignId?: string): CampaignMap[] {
-        const campaigns = campaignId ? [this.getCampaign(campaignId)].filter(Boolean) : this.state.campaigns;
+        const campaigns = campaignId
+            ? [this.getCampaign(campaignId)].filter(Boolean)
+            : this.state.campaigns;
         const results: CampaignMap[] = [];
 
         for (const campaign of campaigns) {
-            const matches = campaign!.maps.filter(map =>
-                map.name.toLowerCase().includes(query.toLowerCase()) ||
-                map.description?.toLowerCase().includes(query.toLowerCase())
+            const matches = campaign!.maps.filter(
+                (map) =>
+                    map.name.toLowerCase().includes(query.toLowerCase()) ||
+                    map.description
+                        ?.toLowerCase()
+                        .includes(query.toLowerCase()),
             );
             results.push(...matches);
         }

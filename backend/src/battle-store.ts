@@ -10,6 +10,7 @@ import {
     canCreatureOccupyPosition,
     getMapCell,
     isValidPosition,
+    CreatureSize,
 } from "./types.ts";
 import { CampaignStore } from "./campaign-store.ts";
 import { ImpossibleCommandError } from "./errors.ts";
@@ -38,6 +39,10 @@ export class BattleStore {
     }
 
     private loadFromFile() {
+        if (Deno.env.get("DISABLE_SAVES") === "true") {
+            // Don't save to file during tests
+            return;
+        }
         try {
             const data = Deno.readTextFileSync(BATTLE_DATA_FILE);
             const state: BattleStoreState = JSON.parse(data);
@@ -61,6 +66,10 @@ export class BattleStore {
     }
 
     private saveToFile() {
+        if (Deno.env.get("DISABLE_SAVES") === "true") {
+            // Don't save to file during tests
+            return;
+        }
         // Debounce saves to avoid excessive file I/O
         if (this.saveTimeout) {
             clearTimeout(this.saveTimeout);
@@ -588,7 +597,7 @@ export class BattleStore {
         console.log("Battle mode:", battle.mode);
         console.log("Battle has map:", !!battle.map);
 
-        let finalPosition = position;
+        let finalPosition: GridPosition | null | undefined = position;
 
         // For grid-based battles, auto-find position if not provided
         if (
