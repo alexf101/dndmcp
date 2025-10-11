@@ -1,5 +1,7 @@
 {
   "tasks": {
+    "dev": "deno run --no-prompt --allow-env --allow-net --allow-read --allow-write --watch backend/src/main-unified.ts",
+    "start": "deno run --allow-net --allow-read --allow-write --allow-env backend/src/main-unified.ts",
     "mcp": "deno run --allow-all mcp-server.ts",
     "backend": "deno run --allow-net --allow-read --allow-write --allow-env backend/src/main.ts",
     "backend:dev": "deno run --no-prompt --allow-env --allow-net --allow-read --allow-write --watch backend/src/main.ts",
