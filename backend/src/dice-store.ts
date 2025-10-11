@@ -1,7 +1,6 @@
 import type { DiceRoll } from "./dice-roller.ts";
 import { logger } from "./logger.ts";
-
-const DICE_DATA_FILE = "./dice-rolls.json";
+import { DICE_DATA_FILE } from "./config.ts";
 
 export interface DiceRollHistory {
     rolls: DiceRoll[];

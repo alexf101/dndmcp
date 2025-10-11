@@ -16,8 +16,7 @@ import { CampaignStore } from "./campaign-store.ts";
 import { ImpossibleCommandError } from "./errors.ts";
 import { logger } from "./logger.ts";
 import { sseManager } from "./sse-manager.ts";
-
-const BATTLE_DATA_FILE = "./battle-data.json";
+import { BATTLE_DATA_FILE } from "./config.ts";
 
 interface BattleStoreState {
     battles: Record<string, BattleState>;

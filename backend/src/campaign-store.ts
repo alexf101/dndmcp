@@ -8,8 +8,8 @@ import {
     BattleMap,
 } from "./types.ts";
 import { logger } from "./logger.ts";
+import { CAMPAIGN_DATA_FILE } from "./config.ts";
 
-const CAMPAIGN_DATA_FILE = "./campaign-data.json";
 const DEFAULT_CAMPAIGN_NAME = "Default Campaign";
 
 export class CampaignStore {
