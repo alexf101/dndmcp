@@ -91,7 +91,13 @@ The frontend will be available at `http://localhost:5173` (default Vite port).
 
 Transform Claude into your personal **D&D Dungeon Master Assistant**! The MCP server enables natural language battle management through Claude Desktop.
 
-#### Quick Setup for Claude Desktop (HTTP Transport)
+#### Quick Setup for Claude Desktop
+
+We support two setup methods depending on your Claude Desktop plan:
+
+##### Option A: HTTP Transport (Recommended for Claude Pro)
+
+**Best for**: Claude Pro users who want the simplest setup with real-time sync.
 
 1. **Start the unified server**: `deno task dev`
 
@@ -108,12 +114,36 @@ Transform Claude into your personal **D&D Dungeon Master Assistant**! The MCP se
 
 3. **Restart Claude Desktop** and you're ready!
 
-4. **Copy the AI prompt**: Open [MCP_AGENT_PROMPT.md](MCP_AGENT_PROMPT.md) and paste its contents into your first message to Claude to initialize it as a D&D assistant.
-
-**Benefits of HTTP Transport:**
+**Benefits:**
 - ✅ Real-time sync between Claude and frontend
 - ✅ Shared state - changes appear instantly
-- ✅ No separate MCP process needed
+- ✅ Only one server process needed
+
+##### Option B: Stdio Bridge (For Claude Desktop Free)
+
+**Best for**: Claude Desktop Free users (stdio-only support).
+
+1. **Start the unified server** (in one terminal): `deno task dev`
+
+2. **Add to your Claude Desktop config** (`~/Library/Application Support/Claude/claude_desktop_config.json`):
+    ```json
+    {
+      "mcpServers": {
+        "dnd-battle-manager": {
+          "command": "deno",
+          "args": ["task", "bridge"]
+        }
+      }
+    }
+    ```
+
+3. **Restart Claude Desktop** and you're ready!
+
+**How it works**: The bridge reads JSON-RPC from Claude Desktop via stdio, forwards requests to the HTTP MCP server at `localhost:8001`, and returns responses. You get all the benefits of shared state while working with Claude Desktop Free!
+
+##### After Setup
+
+**Copy the AI prompt**: Open [MCP_AGENT_PROMPT.md](MCP_AGENT_PROMPT.md) and paste its contents into your first message to Claude to initialize it as a D&D assistant.
 
 #### Using the MCP Server
 
@@ -172,6 +202,7 @@ deno task backend:dev
 **Recommended:**
 -   `deno task dev` - Start unified server (REST + MCP) with hot-reloading
 -   `deno task start` - Start unified server in production mode
+-   `deno task bridge` - Run stdio-to-HTTP bridge (for Claude Desktop Free)
 
 **Legacy/Testing:**
 -   `deno task backend:dev` - Start REST-only backend with hot-reloading
