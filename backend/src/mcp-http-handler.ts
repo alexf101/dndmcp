@@ -41,7 +41,11 @@ export function createMCPHttpHandler(
     campaignStore: CampaignStore,
     diceStore: DiceStore,
 ) {
-    const handler = createUniversalHandler(battleStore, campaignStore, diceStore);
+    const handler = createUniversalHandler(
+        battleStore,
+        campaignStore,
+        diceStore,
+    );
 
     return async (ctx: Context) => {
         try {
@@ -100,7 +104,11 @@ export function createMCPHttpHandler(
                 }
 
                 // Format success response based on command type
-                const responseText = formatMCPToolResponse(commandType, result.data, args);
+                const responseText = formatMCPToolResponse(
+                    commandType,
+                    result.data,
+                    args,
+                );
 
                 const response: JSONRPCResponse = {
                     jsonrpc: "2.0",
@@ -118,13 +126,38 @@ export function createMCPHttpHandler(
                 return;
             }
 
+            if (request.method === "initialize") {
+                const response = {
+                    jsonrpc: "2.0",
+                    id: request.id,
+                    result: {
+                        protocolVersion: "2025-06-18", // The protocol version you support
+                        serverInfo: {
+                            name: "dnd-battle-manager",
+                            version: "1.0.0",
+                        },
+                        // Declare your server's capabilities.
+                        // For a tool server, simply declaring 'tools' is enough to start.
+                        capabilities: {
+                            tools: {},
+                        },
+                    },
+                };
+
+                // Set the response with a 200 OK status
+                ctx.response.status = 200;
+                ctx.response.body = response;
+                return; // Stop further processing
+            }
+
             // Unknown method
             const response: JSONRPCResponse = {
                 jsonrpc: "2.0",
                 id: request.id,
                 error: {
                     code: -32601,
-                    message: `Method not found: ${request.method}`,
+                    // message: `Method not found: ${request.method}`,
+                    message: "Method not found",
                 },
             };
             ctx.response.status = 404;
@@ -136,7 +169,8 @@ export function createMCPHttpHandler(
                 id: 0,
                 error: {
                     code: -32700,
-                    message: error instanceof Error ? error.message : String(error),
+                    message:
+                        error instanceof Error ? error.message : String(error),
                 },
             };
             ctx.response.status = 500;
@@ -148,7 +182,11 @@ export function createMCPHttpHandler(
 /**
  * Format MCP tool response text (same logic as stdio MCP server)
  */
-function formatMCPToolResponse(commandType: string, data: any, args: any): string {
+function formatMCPToolResponse(
+    commandType: string,
+    data: any,
+    args: any,
+): string {
     switch (commandType) {
         case "CREATE_BATTLE": {
             const battle = data;
@@ -232,7 +270,9 @@ function formatMCPToolResponse(commandType: string, data: any, args: any): strin
                         } creatures, ${c.maps.length} maps`,
                 )
                 .join("\n");
-            return `Current campaigns:\n${campaignList || "No campaigns found"}`;
+            return `Current campaigns:\n${
+                campaignList || "No campaigns found"
+            }`;
         }
 
         case "CREATE_CAMPAIGN": {
@@ -260,18 +300,24 @@ function formatMCPToolResponse(commandType: string, data: any, args: any): strin
 
         case "ROLL_DICE": {
             const roll = data;
-            const rollDetails = roll.rolls.length > 1
-                ? ` (${roll.rolls.join(", ")})`
+            const rollDetails =
+                roll.rolls.length > 1 ? ` (${roll.rolls.join(", ")})` : "";
+            const modifierText =
+                roll.modifier !== 0
+                    ? ` with modifier ${roll.modifier >= 0 ? "+" : ""}${
+                          roll.modifier
+                      }`
+                    : "";
+            const descriptionText = roll.description
+                ? `**${roll.description}**\n`
                 : "";
-            const modifierText = roll.modifier !== 0
-                ? ` with modifier ${roll.modifier >= 0 ? "+" : ""}${roll.modifier}`
-                : "";
-            const descriptionText = roll.description ? `**${roll.description}**\n` : "";
             return `${descriptionText}🎲 Rolled ${roll.notation}${rollDetails}${modifierText}\n**Total: ${roll.total}**`;
         }
 
         default: {
-            return data ? JSON.stringify(data, null, 2) : "Operation completed successfully";
+            return data
+                ? JSON.stringify(data, null, 2)
+                : "Operation completed successfully";
         }
     }
 }

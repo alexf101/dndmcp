@@ -60,7 +60,7 @@ class TestClient {
 
 // Test server setup
 async function startTestServer(): Promise<{ port: number; close: () => void }> {
-    const port = 8001; // Use different port for tests
+    const port = 8002; // Use different port for tests
     const app = new Application();
 
     app.use(oakCors({ origin: "*" }));

@@ -115,6 +115,11 @@ const AbilityScore = styled.div`
         font-weight: bold;
         color: ${({ theme }) => theme.colors.text.primary};
     }
+
+    .modifier {
+        font-size: ${({ theme }) => theme.typography.sizes.xs};
+        color: ${({ theme }) => theme.colors.text.secondary};
+    }
 `;
 
 const StatusEffects = styled.div`
@@ -141,7 +146,6 @@ const StatusEffects = styled.div`
         font-size: ${({ theme }) => theme.typography.sizes.sm};
     }
 `;
-
 
 interface CreatureTooltipProps {
     creature: Creature | null;
@@ -295,11 +299,11 @@ export default function CreatureTooltip({
                 </AbilityScore>
             </AbilityScores>
 
-            {creature.statusEffects.length > 0 && (
+            {creature.statusEffects?.length > 0 && (
                 <StatusEffects>
                     <div className="title">Status Effects:</div>
                     <div className="effects">
-                        {creature.statusEffects.map((effect, index) => (
+                        {creature.statusEffects?.map((effect, index) => (
                             <div key={index} className="effect">
                                 {effect.name}
                                 {effect.duration && ` (${effect.duration})`}

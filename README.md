@@ -53,8 +53,9 @@ deno task start
 ```
 
 This starts:
-- **REST API** on `http://localhost:8000`
-- **MCP HTTP Server** on `http://localhost:8001/mcp`
+
+-   **REST API** on `http://localhost:8000`
+-   **MCP HTTP Server** on `http://localhost:8001/mcp`
 
 Both share the same in-memory state, enabling instant real-time updates!
 
@@ -102,22 +103,24 @@ We support two setup methods depending on your Claude Desktop plan:
 1. **Start the unified server**: `deno task dev`
 
 2. **Add to your Claude Desktop config** (`~/Library/Application Support/Claude/claude_desktop_config.json`):
+
     ```json
     {
-      "mcpServers": {
-        "dnd-battle-manager": {
-          "url": "http://localhost:8001/mcp"
+        "mcpServers": {
+            "dnd-battle-manager": {
+                "url": "http://localhost:8001/mcp"
+            }
         }
-      }
     }
     ```
 
 3. **Restart Claude Desktop** and you're ready!
 
 **Benefits:**
-- ✅ Real-time sync between Claude and frontend
-- ✅ Shared state - changes appear instantly
-- ✅ Only one server process needed
+
+-   ✅ Real-time sync between Claude and frontend
+-   ✅ Shared state - changes appear instantly
+-   ✅ Only one server process needed
 
 ##### Option B: Stdio Bridge (For Claude Desktop Free)
 
@@ -126,14 +129,36 @@ We support two setup methods depending on your Claude Desktop plan:
 1. **Start the unified server** (in one terminal): `deno task dev`
 
 2. **Add to your Claude Desktop config** (`~/Library/Application Support/Claude/claude_desktop_config.json`):
+
     ```json
     {
-      "mcpServers": {
-        "dnd-battle-manager": {
-          "command": "deno",
-          "args": ["task", "bridge"]
+        "mcpServers": {
+            "dnd-battle-manager": {
+                "command": "sh",
+                "args": [
+                    "-c",
+                    "cd /absolute/path/to/dndmcp && deno task bridge"
+                ]
+            }
         }
-      }
+    }
+    ```
+
+    **Important**: Replace `/absolute/path/to/dndmcp` with the actual absolute path to your project directory.
+
+    For example, if you cloned the repo to `/Users/alex/projects/dndmcp`:
+
+    ```json
+    {
+        "mcpServers": {
+            "dnd-battle-manager": {
+                "command": "bash",
+                "args": [
+                    "-c",
+                    "cd /Users/alex/projects/dndmcp && deno task bridge"
+                ]
+            }
+        }
     }
     ```
 
@@ -149,10 +174,10 @@ We support two setup methods depending on your Claude Desktop plan:
 
 Once configured, talk to Claude naturally about D&D:
 
-- **"Create a forest goblin ambush encounter for 4 players"**
-- **"The rogue attacks the goblin for 6 damage"**
-- **"Roll initiative and move to the next turn"**
-- **"Save this goblin as a campaign creature template"**
+-   **"Create a forest goblin ambush encounter for 4 players"**
+-   **"The rogue attacks the goblin for 6 damage"**
+-   **"Roll initiative and move to the next turn"**
+-   **"Save this goblin as a campaign creature template"**
 
 Claude will automatically use the MCP tools to manage your battle state!
 
@@ -200,11 +225,13 @@ deno task backend:dev
 ### Deno Tasks (run from project root)
 
 **Recommended:**
+
 -   `deno task dev` - Start unified server (REST + MCP) with hot-reloading
 -   `deno task start` - Start unified server in production mode
 -   `deno task bridge` - Run stdio-to-HTTP bridge (for Claude Desktop Free)
 
 **Legacy/Testing:**
+
 -   `deno task backend:dev` - Start REST-only backend with hot-reloading
 -   `deno task backend` - Start REST-only backend in production mode
 -   `deno task mcp` - Run standalone MCP server (stdio transport)
@@ -223,21 +250,25 @@ deno task backend:dev
 The backend provides RESTful endpoints for battle state management:
 
 ### Battle Management
+
 -   `GET /api/battles` - List all battles
 -   `POST /api/battles` - Create new battle
 -   `GET /api/battles/:id` - Get battle details
 -   `POST /api/battles/:id/command` - Execute battle command
 
 ### Dice Rolling
+
 -   `POST /api/dice/roll` - Roll dice using D&D notation
 -   `GET /api/dice/rolls` - Get dice roll history
 
 ### Campaign Management
+
 -   `GET /api/campaigns` - List all campaigns
 -   `POST /api/campaigns` - Create new campaign
 -   `GET /api/campaigns/:id/creatures` - Search campaign creatures
 
 ### Real-time Updates
+
 -   `GET /api/events` - SSE endpoint for live battle and dice updates
 
 ## Features

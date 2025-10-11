@@ -217,7 +217,7 @@ export default function CreatureTable({
                             <td>
                                 {creature.statusEffects?.length > 0 ? (
                                     <StatusEffects>
-                                        {creature.statusEffects.map(
+                                        {creature.statusEffects?.map(
                                             (effect, i) => (
                                                 <StatusEffect key={i}>
                                                     {effect.name}

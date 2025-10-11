@@ -29,9 +29,10 @@ async function forwardToHTTP(message: JSONRPCMessage): Promise<JSONRPCMessage> {
             body: JSON.stringify(message),
         });
 
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
+        // if (!response.ok) {
+        //     return await response.json();
+        //     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        // }
 
         const result = await response.json();
         return result as JSONRPCMessage;
@@ -41,7 +42,7 @@ async function forwardToHTTP(message: JSONRPCMessage): Promise<JSONRPCMessage> {
             jsonrpc: "2.0",
             id: message.id,
             error: {
-                code: -32603,
+                code: -32601, // 32603?
                 message: error instanceof Error ? error.message : String(error),
             },
         };
@@ -87,17 +88,30 @@ async function runBridge() {
                     // Parse JSON-RPC message
                     const message: JSONRPCMessage = JSON.parse(line);
 
-                    console.error(`📨 Received: ${message.method || "response"} (id: ${message.id})`);
+                    console.error(
+                        `📨 Received: ${message.method || "response"} (id: ${
+                            message.id
+                        })`,
+                    );
 
                     // Forward to HTTP MCP server
                     const response = await forwardToHTTP(message);
 
-                    console.error(`📤 Sending: ${response.result ? "result" : "error"} (id: ${response.id})`);
+                    // Don't send any result if we didn't get one; it crashes things...
+                    if (!response.result) {
+                        console.error(`📤 Sending: error (id: ${response.id})`);
+                    } else {
+                        console.error(
+                            `📤 Sending: result (id: ${response.id})`,
+                        );
 
-                    // Write response to stdout (with newline for MCP stdio protocol)
-                    await Deno.stdout.write(
-                        new TextEncoder().encode(JSON.stringify(response) + "\n"),
-                    );
+                        // Write response to stdout (with newline for MCP stdio protocol)
+                        await Deno.stdout.write(
+                            new TextEncoder().encode(
+                                JSON.stringify(response) + "\n",
+                            ),
+                        );
+                    }
                 } catch (error) {
                     console.error(`❌ Error processing message: ${error}`);
                     console.error(`   Line was: ${line}`);
