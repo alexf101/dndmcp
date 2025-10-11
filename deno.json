@@ -1,17 +1,22 @@
 {
   "tasks": {
     "mcp": "deno run --allow-all mcp-server.ts",
-    "backend": "cd backend && deno run --allow-net --allow-read --allow-write --allow-env src/main.ts",
-    "test": "cd backend && deno test --allow-read --allow-write --allow-env",
-    "test:mcp": "cd backend && deno test --no-check --allow-read --allow-write --allow-env src/mcp-integration.test.ts"
+    "backend": "deno run --allow-net --allow-read --allow-write --allow-env backend/src/main.ts",
+    "backend:dev": "deno run --no-prompt --allow-env --allow-net --allow-read --allow-write --watch backend/src/main.ts",
+    "test": "deno test --allow-net --allow-read --allow-write --allow-env backend/src/test-integration.ts",
+    "test:mcp": "deno test --no-check --allow-read --allow-write --allow-env backend/src/mcp-integration.test.ts"
   },
   "imports": {
-    "@modelcontextprotocol/sdk/": "npm:@modelcontextprotocol/sdk@latest/"
+    "@modelcontextprotocol/sdk/": "npm:@modelcontextprotocol/sdk@latest/",
+    "@oak/oak": "jsr:@oak/oak@^17.1.0",
+    "@std/http": "jsr:@std/http@^1.0.8"
   },
   "compilerOptions": {
     "allowJs": true,
     "lib": ["deno.window"],
-    "strict": true
+    "strict": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true
   },
   "fmt": {
     "files": {

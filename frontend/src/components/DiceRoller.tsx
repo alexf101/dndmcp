@@ -155,6 +155,7 @@ const NoResults = styled.div`
 `;
 
 interface DiceRoll {
+    id: string;
     notation: string;
     rolls: number[];
     total: number;
@@ -194,8 +195,8 @@ export default function DiceRoller({ onRegisterRollHandler }: DiceRollerProps = 
     // Handler for new rolls from SSE
     const handleNewRoll = useCallback((roll: DiceRoll) => {
         setRolls((prev) => {
-            // Check if this roll is already in the list (by timestamp)
-            const exists = prev.some(r => r.timestamp === roll.timestamp);
+            // Check if this roll is already in the list (by UUID)
+            const exists = prev.some(r => r.id === roll.id);
             if (exists) return prev;
 
             return [roll, ...prev].slice(0, 10);
@@ -237,7 +238,11 @@ export default function DiceRoller({ onRegisterRollHandler }: DiceRollerProps = 
                 return;
             }
 
-            setRolls((prev) => [data.data, ...prev].slice(0, 10)); // Keep last 10 rolls
+            // Add the roll immediately so it appears even if SSE is down
+            // The UUID-based duplicate check in handleNewRoll will prevent SSE from adding it again
+            if (data.data) {
+                handleNewRoll(data.data);
+            }
         } catch (err) {
             setError(err instanceof Error ? err.message : "Failed to roll dice");
         } finally {

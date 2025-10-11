@@ -4,6 +4,7 @@
  */
 
 export interface DiceRoll {
+    id: string; // Unique identifier for this roll
     notation: string; // e.g., "2d20+5"
     rolls: number[]; // Individual die results
     total: number; // Sum of rolls + modifier
@@ -74,6 +75,7 @@ export function rollDice(
     const total = finalRolls.reduce((sum, roll) => sum + roll, 0) + modifier;
 
     return {
+        id: crypto.randomUUID(),
         notation: notation + (additionalModifier !== 0 ? `${additionalModifier >= 0 ? "+" : ""}${additionalModifier}` : ""),
         rolls,
         total,

@@ -29,25 +29,27 @@ This project creates a battle state management system that separates state stora
 
 ## Getting Started
 
+### Initial Setup
+
+1. Install dependencies:
+
+    ```bash
+    deno install
+    ```
+
 ### Backend (Deno Server)
 
-1. Navigate to the backend directory:
+Start the development server with hot-reloading:
 
-    ```bash
-    cd backend
-    ```
+```bash
+deno task backend:dev
+```
 
-2. Start the development server:
+Or for production:
 
-    ```bash
-    deno task dev
-    ```
-
-    Or for production:
-
-    ```bash
-    deno task start
-    ```
+```bash
+deno task backend
+```
 
 The backend server will start on `http://localhost:8000` (or configured port).
 
@@ -55,7 +57,9 @@ The backend server will start on `http://localhost:8000` (or configured port).
 
 We have integration tests for the major API endpoints. Run them as:
 
-    deno task test
+```bash
+deno task test
+```
 
 ### Frontend (React App)
 
@@ -78,6 +82,49 @@ We have integration tests for the major API endpoints. Run them as:
 
 The frontend will be available at `http://localhost:5173` (default Vite port).
 
+### MCP Server (AI Integration)
+
+Transform Claude into your personal **D&D Dungeon Master Assistant**! The MCP server enables natural language battle management through Claude Desktop.
+
+#### Quick Setup for Claude Desktop
+
+1. **Add to your Claude Desktop config** (`~/Library/Application Support/Claude/claude_desktop_config.json`):
+    ```json
+    {
+      "mcpServers": {
+        "dnd-battle-manager": {
+          "command": "deno",
+          "args": ["run", "--allow-all", "/absolute/path/to/dndmcp/mcp-server.ts"]
+        }
+      }
+    }
+    ```
+
+    Replace `/absolute/path/to/dndmcp` with your actual project path.
+
+2. **Restart Claude Desktop** and you're ready!
+
+3. **Copy the AI prompt**: Open [MCP_AGENT_PROMPT.md](MCP_AGENT_PROMPT.md) and paste its contents into your first message to Claude to initialize it as a D&D assistant.
+
+#### Using the MCP Server
+
+Once configured, talk to Claude naturally about D&D:
+
+- **"Create a forest goblin ambush encounter for 4 players"**
+- **"The rogue attacks the goblin for 6 damage"**
+- **"Roll initiative and move to the next turn"**
+- **"Save this goblin as a campaign creature template"**
+
+Claude will automatically use the MCP tools to manage your battle state!
+
+#### Standalone MCP Server
+
+You can also run the MCP server standalone (without Claude Desktop):
+
+```bash
+deno task mcp
+```
+
 ### Full Development Setup
 
 To run both backend and frontend simultaneously:
@@ -85,7 +132,7 @@ To run both backend and frontend simultaneously:
 1. **Terminal 1** - Start the backend:
 
     ```bash
-    cd backend && deno task dev
+    deno task backend:dev
     ```
 
 2. **Terminal 2** - Start the frontend:
@@ -93,13 +140,20 @@ To run both backend and frontend simultaneously:
     cd frontend && npm install && npm run dev
     ```
 
+3. **(Optional) Terminal 3** - Run the MCP server for AI integration:
+    ```bash
+    deno task mcp
+    ```
+
 ## Available Scripts
 
-### Backend (Deno)
+### Deno Tasks (run from project root)
 
--   `deno task dev` - Start development server with file watching
--   `deno task start` - Start production server
+-   `deno task backend:dev` - Start backend with hot-reloading
+-   `deno task backend` - Start backend in production mode
+-   `deno task mcp` - Run MCP server for AI integration
 -   `deno task test` - Run backend API endpoint tests
+-   `deno task test:mcp` - Run MCP integration tests
 
 ### Frontend (React)
 
@@ -112,20 +166,35 @@ To run both backend and frontend simultaneously:
 
 The backend provides RESTful endpoints for battle state management:
 
+### Battle Management
 -   `GET /api/battles` - List all battles
 -   `POST /api/battles` - Create new battle
 -   `GET /api/battles/:id` - Get battle details
--   `PUT /api/battles/:id` - Update battle state
--   `DELETE /api/battles/:id` - Delete battle
+-   `POST /api/battles/:id/command` - Execute battle command
+
+### Dice Rolling
+-   `POST /api/dice/roll` - Roll dice using D&D notation
+-   `GET /api/dice/rolls` - Get dice roll history
+
+### Campaign Management
+-   `GET /api/campaigns` - List all campaigns
+-   `POST /api/campaigns` - Create new campaign
+-   `GET /api/campaigns/:id/creatures` - Search campaign creatures
+
+### Real-time Updates
+-   `GET /api/events` - SSE endpoint for live battle and dice updates
 
 ## Features
 
--   **Real-time Battle State**: Live updates and synchronization
+-   **Real-time Battle State**: Live updates via Server-Sent Events (SSE)
+-   **Dice Rolling**: D&D 5e notation support (d4, d6, d8, d10, d12, d20, d100, advantage/disadvantage)
+-   **Persistent History**: Battle states and dice rolls saved to file
 -   **Undo/Redo System**: Action rollback for invalid moves
--   **AI Integration**: Natural language commands through MCP
--   **Initiative Tracking**: Turn order and combat flow management
--   **Character Management**: Health, stats, and status effects
--   **Combat Logging**: History of actions and events
+-   **AI Integration**: Natural language commands through Model Context Protocol (MCP)
+-   **Initiative Tracking**: Automatic turn order and combat flow management
+-   **Character Management**: Health, stats, status effects, and positioning
+-   **Campaign System**: Reusable creature templates and maps
+-   **Grid & Theatre of Mind**: Support for both tactical and narrative combat modes
 
 ## Development
 
