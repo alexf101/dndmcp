@@ -1,4 +1,5 @@
 import { OPEN_5E_SCHEMA_FILE, OPEN_5E_API_CACHE_FILE } from "./config.ts";
+import { parse as parseYaml } from "jsr:@std/yaml";
 
 // Simple in-memory cache with persistence to file
 // Keyed by path + query params; exact matches only, no invalidation.
@@ -17,10 +18,72 @@ function cacheKey(key: CacheKey): string {
 }
 let Cache: Record<string, CacheValue> = {};
 
+// Parse the schema once to extract endpoints
+interface SchemaEndpoint {
+    path: string;
+    methods: string[];
+    description?: string;
+}
+
+let cachedEndpoints: SchemaEndpoint[] | null = null;
+
+function parseSchemaEndpoints(schemaText: string): SchemaEndpoint[] {
+    try {
+        const schema = parseYaml(schemaText) as any;
+        const endpoints: SchemaEndpoint[] = [];
+
+        if (schema.paths && typeof schema.paths === "object") {
+            for (const [path, methods] of Object.entries(schema.paths)) {
+                const methodNames = Object.keys(methods as object).filter((m) =>
+                    ["get", "post", "put", "delete", "patch"].includes(
+                        m.toLowerCase(),
+                    ),
+                );
+
+                // Extract description from the first method's description
+                let description: string | undefined;
+                if (methodNames.length > 0) {
+                    const firstMethod = (methods as Record<string, unknown>)[
+                        methodNames[0]
+                    ];
+                    if (
+                        firstMethod &&
+                        typeof firstMethod === "object" &&
+                        "description" in firstMethod
+                    ) {
+                        description = (
+                            firstMethod as { description?: string }
+                        ).description?.slice(0, 100);
+                    }
+                }
+
+                endpoints.push({
+                    path,
+                    methods: methodNames.map((m) => m.toUpperCase()),
+                    description,
+                });
+            }
+        }
+
+        return endpoints;
+    } catch (error) {
+        console.error("Failed to parse schema", error);
+        return [];
+    }
+}
+
 export class Open5eApi {
     static getSchema() {
         console.log("SCHEMA PATH: ", OPEN_5E_SCHEMA_FILE);
         return Deno.readTextFileSync(OPEN_5E_SCHEMA_FILE);
+    }
+
+    static getSchemaEndpoints(): SchemaEndpoint[] {
+        if (cachedEndpoints === null) {
+            const schemaText = this.getSchema();
+            cachedEndpoints = parseSchemaEndpoints(schemaText);
+        }
+        return cachedEndpoints;
     }
 
     static reloadCache() {
@@ -87,5 +150,69 @@ export class Open5eApi {
         });
 
         return result;
+    }
+
+    // Lazy-loading schema methods
+    static schemaOverview(): object {
+        const endpoints = this.getSchemaEndpoints();
+        return {
+            endpoint_count: endpoints.length,
+            endpoints: endpoints.map((e) => ({
+                path: e.path,
+                methods: e.methods,
+            })),
+        };
+    }
+
+    static schemaEndpointDetail(path: string): object {
+        // Normalize the path
+        if (!path.startsWith("/")) {
+            path = "/" + path;
+        }
+        if (!path.endsWith("/")) {
+            path = path + "/";
+        }
+        // Avoid footguns; all endpoints in schema begin with /v2/
+        path = "/v2" + path.replace(/^\/(api|v2)/, "");
+        console.error("Looking up schema detail for normalised path:", path);
+
+        // Parse the full schema to get detailed info for this endpoint
+        try {
+            const schemaText = this.getSchema();
+            const schema = parseYaml(schemaText) as any;
+            const endpointData = schema.paths[path];
+
+            if (!endpointData) {
+                return { success: false, error: "Endpoint data not found" };
+            }
+
+            // Return detailed info about this endpoint
+            return {
+                path: path,
+                methods: Object.keys(endpointData)
+                    .filter((m) =>
+                        ["get", "post", "put", "delete", "patch"].includes(
+                            m.toLowerCase(),
+                        ),
+                    )
+                    .map((method) => {
+                        const methodData = endpointData[method];
+                        return {
+                            method: method.toUpperCase(),
+                            description:
+                                (methodData as { description?: string })
+                                    ?.description || "",
+                            parameters:
+                                (methodData as { parameters?: unknown[] })
+                                    ?.parameters || [],
+                        };
+                    }),
+            };
+        } catch (e) {
+            return {
+                success: false,
+                error: `Failed to parse schema: ${e.message}`,
+            };
+        }
     }
 }

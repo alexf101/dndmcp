@@ -498,11 +498,31 @@ export function generateAllMCPTools(): MCPTool[] {
     tools.push({
         name: "open5e_schema",
         description:
-            "View the complete Open5e v2 API schema (~200kB). For use with the open5e_lookup tool.",
+            "Get a lightweight overview of all available Open5e v2 API endpoints. Returns endpoint paths and HTTP methods. " +
+            "Use open5e_schema_detail to get detailed parameter information for a specific endpoint.",
         inputSchema: {
             type: "object",
             properties: {},
             required: [],
+            additionalProperties: false,
+        },
+    });
+
+    tools.push({
+        name: "open5e_schema_detail",
+        description:
+            "Get detailed schema information for a specific Open5e v2 API endpoint, including parameter definitions and descriptions. " +
+            "Use open5e_schema first to browse available endpoints.",
+        inputSchema: {
+            type: "object",
+            properties: {
+                path: {
+                    type: "string",
+                    description:
+                        "API endpoint path (e.g., '/creatures/', '/spells/'). The path will be normalized with leading slash and trailing slash if needed.",
+                },
+            },
+            required: ["path"],
             additionalProperties: false,
         },
     });
@@ -568,6 +588,7 @@ export function generateToolCommandMapping(): Record<
     mapping["roll_dice"] = "ROLL_DICE";
     mapping["open5e_lookup"] = "OPEN5E_LOOKUP";
     mapping["open5e_schema"] = "OPEN5E_SCHEMA";
+    mapping["open5e_schema_detail"] = "OPEN5E_SCHEMA_DETAIL";
 
     return mapping;
 }

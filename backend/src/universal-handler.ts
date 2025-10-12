@@ -370,10 +370,28 @@ export class UniversalHandler {
 
                 // DnD utilities
                 case "OPEN5E_SCHEMA": {
-                    // Return the Open5e API schema as-is; it's saved locally as open_5e_v1.yaml
-                    // See: https://api.open5e.com/schema to get the latest version
-                    const schema = Open5eApi.getSchema();
-                    return { success: true, data: schema };
+                    // Return a lightweight overview of all Open5e API endpoints
+                    // Use OPEN5E_SCHEMA_DETAIL for full information about a specific endpoint
+                    const overview = Open5eApi.schemaOverview();
+                    return { success: true, data: overview };
+                }
+                case "OPEN5E_SCHEMA_DETAIL": {
+                    // Return detailed schema information for a specific endpoint
+                    // Usage:
+                    // {
+                    //   "jsonrpc": "2.0",
+                    //   "id": 1,
+                    //   "method": "tools/call",
+                    //   "params": {
+                    //     "name": "open5e_schema_detail",
+                    //     "arguments": {
+                    //         "path": "/creatures/"  // (trailing slash will be added if missing)
+                    //     }
+                    //   }
+                    // }
+                    const request = args as { path: string };
+                    const detail = Open5eApi.schemaEndpointDetail(request.path);
+                    return { success: true, data: detail };
                 }
                 case "OPEN5E_LOOKUP": {
                     // In addition to the functionality we implement locally, we also proxy
