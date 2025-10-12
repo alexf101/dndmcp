@@ -71,8 +71,17 @@ const SCHEMAS = {
     terrain: {
         type: "string",
         enum: [
-            "Empty", "Wall", "DifficultTerrain", "Water", "Pit",
-            "Door", "Window", "Cover", "HeavyCover", "Stairs", "Hazard"
+            "Empty",
+            "Wall",
+            "DifficultTerrain",
+            "Water",
+            "Pit",
+            "Door",
+            "Window",
+            "Cover",
+            "HeavyCover",
+            "Stairs",
+            "Hazard",
         ] as TerrainType[],
         description: "Type of terrain",
     },
@@ -85,7 +94,10 @@ const SCHEMAS = {
         type: "object",
         properties: {
             width: { type: "number", description: "Map width in grid squares" },
-            height: { type: "number", description: "Map height in grid squares" },
+            height: {
+                type: "number",
+                description: "Map height in grid squares",
+            },
         },
         required: ["width", "height"],
         description: "Map dimensions",
@@ -117,10 +129,20 @@ const SCHEMAS = {
             },
             size: {
                 type: "string",
-                enum: ["Tiny", "Small", "Medium", "Large", "Huge", "Gargantuan"] as CreatureSize[],
+                enum: [
+                    "Tiny",
+                    "Small",
+                    "Medium",
+                    "Large",
+                    "Huge",
+                    "Gargantuan",
+                ] as CreatureSize[],
                 description: "Creature size",
             },
-            isPlayer: { type: "boolean", description: "Whether this is a player character" },
+            isPlayer: {
+                type: "boolean",
+                description: "Whether this is a player character",
+            },
             position: {
                 type: "object",
                 properties: {
@@ -142,7 +164,16 @@ const SCHEMAS = {
                 description: "Active status effects",
             },
         },
-        required: ["name", "hp", "maxHp", "ac", "initiative", "stats", "size", "isPlayer"],
+        required: [
+            "name",
+            "hp",
+            "maxHp",
+            "ac",
+            "initiative",
+            "stats",
+            "size",
+            "isPlayer",
+        ],
         description: "Creature data",
     },
     updates: {
@@ -176,14 +207,18 @@ const SCHEMAS = {
 } as const;
 
 // Command descriptions for better MCP tool names and descriptions
-const COMMAND_DESCRIPTIONS: Record<CommandType | CampaignCommandType, { name: string; description: string }> = {
+const COMMAND_DESCRIPTIONS: Record<
+    CommandType | CampaignCommandType,
+    { name: string; description: string }
+> = {
     ADD_CREATURE: {
         name: "add_creature",
         description: "Add a creature to a battle with stats, position, etc.",
     },
     UPDATE_CREATURE: {
         name: "update_creature",
-        description: "Update creature properties (HP, status effects, position)",
+        description:
+            "Update creature properties (HP, status effects, position)",
     },
     REMOVE_CREATURE: {
         name: "remove_creature",
@@ -215,7 +250,8 @@ const COMMAND_DESCRIPTIONS: Record<CommandType | CampaignCommandType, { name: st
     },
     SET_TERRAIN: {
         name: "set_terrain",
-        description: "Set terrain type for specific positions on the battle map",
+        description:
+            "Set terrain type for specific positions on the battle map",
     },
     TOGGLE_DOOR: {
         name: "toggle_door",
@@ -283,7 +319,10 @@ function getValidationSchema(fieldName: string): Record<string, unknown> {
 }
 
 // Generate MCP tool from route config
-function generateMCPTool(commandType: CommandType | CampaignCommandType, config: RouteConfig): MCPTool {
+function generateMCPTool(
+    commandType: CommandType | CampaignCommandType,
+    config: RouteConfig,
+): MCPTool {
     const { name, description } = COMMAND_DESCRIPTIONS[commandType];
 
     const properties: Record<string, unknown> = {};
@@ -360,7 +399,9 @@ export function generateAllMCPTools(): MCPTool[] {
     }
 
     // Generate campaign management tools
-    for (const [commandType, config] of Object.entries(CAMPAIGN_ROUTE_CONFIGS)) {
+    for (const [commandType, config] of Object.entries(
+        CAMPAIGN_ROUTE_CONFIGS,
+    )) {
         tools.push(generateMCPTool(commandType as CampaignCommandType, config));
     }
 
@@ -421,22 +462,72 @@ export function generateAllMCPTools(): MCPTool[] {
     });
 
     tools.push({
+        name: "open5e_lookup",
+        description:
+            "Lookup D&D 5e creatures, items, spells, etc. using the Open5e API to get detailed and accurate DnD information",
+        inputSchema: {
+            type: "object",
+            properties: {
+                path: {
+                    type: "string",
+                    description:
+                        "API path to query (e.g., '/creatures/', '/items/'). Use the open5e_schema tool to explore available endpoints." +
+                        "Do not include the base URL or query parameters. Only v2 endpoints are supported, and the '/v2/' prefix is automatically added." +
+                        "All queries are cached for duration of the server session." +
+                        "Most useful routes: /creatures/ for fetching monster stat blocks by name or CR, /spells/ for spell mechanics, and /search/ for cross-resource queries across creatures, spells, items, and rules.",
+                },
+                page: {
+                    type: "number",
+                    description:
+                        "Page number for paginated results (default: 1)",
+                },
+                queryParams: {
+                    type: "object",
+                    description:
+                        "Additional query parameters as key-value pairs (e.g., { 'name__icontains': 'dragon' })",
+                    additionalProperties: {
+                        type: ["string", "number", "boolean"],
+                    },
+                },
+            },
+            required: ["path"],
+            additionalProperties: false,
+        },
+    });
+
+    tools.push({
+        name: "open5e_schema",
+        description:
+            "View the complete Open5e v2 API schema (~200kB). For use with the open5e_lookup tool.",
+        inputSchema: {
+            type: "object",
+            properties: {},
+            required: [],
+            additionalProperties: false,
+        },
+    });
+
+    tools.push({
         name: "roll_dice",
-        description: "Roll dice using D&D notation (e.g., '2d20', '1d6+3', '4d6kh3' for advantage/ability scores)",
+        description:
+            "Roll dice using D&D notation (e.g., '2d20', '1d6+3', '4d6kh3' for advantage/ability scores)",
         inputSchema: {
             type: "object",
             properties: {
                 dice: {
                     type: "string",
-                    description: "Dice notation (e.g., '1d20', '2d6+3', '2d20kh1' for advantage, '4d6kh3' for ability scores). Supports d4, d6, d8, d10, d12, d20, d100.",
+                    description:
+                        "Dice notation (e.g., '1d20', '2d6+3', '2d20kh1' for advantage, '4d6kh3' for ability scores). Supports d4, d6, d8, d10, d12, d20, d100.",
                 },
                 modifier: {
                     type: "number",
-                    description: "Additional modifier to add to the roll (optional)",
+                    description:
+                        "Additional modifier to add to the roll (optional)",
                 },
                 description: {
                     type: "string",
-                    description: "Description of what this roll is for (e.g., 'Attack roll', 'Strength save')",
+                    description:
+                        "Description of what this roll is for (e.g., 'Attack roll', 'Strength save')",
                 },
             },
             required: ["dice"],
@@ -448,8 +539,12 @@ export function generateAllMCPTools(): MCPTool[] {
 }
 
 // Generate mapping from MCP tool name to command type for the handler
-export function generateToolCommandMapping(): Record<string, CommandType | CampaignCommandType | string> {
-    const mapping: Record<string, CommandType | CampaignCommandType | string> = {};
+export function generateToolCommandMapping(): Record<
+    string,
+    CommandType | CampaignCommandType | string
+> {
+    const mapping: Record<string, CommandType | CampaignCommandType | string> =
+        {};
 
     // Map battle commands
     for (const commandType of Object.keys(ROUTE_CONFIGS) as CommandType[]) {
@@ -458,7 +553,9 @@ export function generateToolCommandMapping(): Record<string, CommandType | Campa
     }
 
     // Map campaign commands
-    for (const commandType of Object.keys(CAMPAIGN_ROUTE_CONFIGS) as CampaignCommandType[]) {
+    for (const commandType of Object.keys(
+        CAMPAIGN_ROUTE_CONFIGS,
+    ) as CampaignCommandType[]) {
         const toolName = COMMAND_DESCRIPTIONS[commandType].name;
         mapping[toolName] = commandType;
     }
@@ -469,6 +566,8 @@ export function generateToolCommandMapping(): Record<string, CommandType | Campa
     mapping["list_campaigns"] = "LIST_CAMPAIGNS";
     mapping["search_campaign_creatures"] = "SEARCH_CAMPAIGN_CREATURES";
     mapping["roll_dice"] = "ROLL_DICE";
+    mapping["open5e_lookup"] = "OPEN5E_LOOKUP";
+    mapping["open5e_schema"] = "OPEN5E_SCHEMA";
 
     return mapping;
 }

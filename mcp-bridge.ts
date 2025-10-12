@@ -29,10 +29,23 @@ async function forwardToHTTP(message: JSONRPCMessage): Promise<JSONRPCMessage> {
             body: JSON.stringify(message),
         });
 
-        // if (!response.ok) {
-        //     return await response.json();
-        //     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        // }
+        if (!response.ok) {
+            // Try and read the body anyway, it might have an error message
+            const errorBody = await response.json();
+            console.error(
+                `HTTP error from MCP server: ${response.status} ${response.statusText}`,
+                errorBody,
+            );
+            if (errorBody.error) {
+                throw new Error(
+                    `HTTP ${response.status}: ${errorBody.error.message}`,
+                );
+            } else {
+                throw new Error(
+                    `HTTP ${response.status}: ${response.statusText}`,
+                );
+            }
+        }
 
         const result = await response.json();
         return result as JSONRPCMessage;
@@ -99,7 +112,8 @@ async function runBridge() {
 
                     // Don't send any result if we didn't get one; it crashes things...
                     if (!response.result) {
-                        console.error(`📤 Sending: error (id: ${response.id})`);
+                        // The error cause should have already been logged.
+                        // console.error(`📤 Sending: error (id: ${response.id})`);
                     } else {
                         console.error(
                             `📤 Sending: result (id: ${response.id})`,

@@ -73,6 +73,7 @@ export function createMCPHttpHandler(
                 // Get command type from tool name
                 const commandType = TOOL_COMMAND_MAPPING[name];
                 if (!commandType) {
+                    console.error(`Unknown tool requested: ${name}`);
                     const response: JSONRPCResponse = {
                         jsonrpc: "2.0",
                         id: request.id,
