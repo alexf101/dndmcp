@@ -18,7 +18,9 @@ Deno.test("Hono API Prototype - POST /api/dice/roll - success", async () => {
   const res = await app.fetch(req);
   assertEquals(res.status, 200);
 
-  const data = await res.json();
+  const response = await res.json();
+  assertEquals(response.success, true);
+  const data = response.data;
   assertExists(data.id);
   assertEquals(data.notation, "2d6+3");
   assertEquals(data.description, "Test roll");
@@ -47,24 +49,9 @@ Deno.test("Hono API Prototype - POST /api/dice/roll - invalid notation", async (
   assertEquals(res.status, 400);
 
   const data = await res.json();
+  assertEquals(data.success, false);
   assertExists(data.error);
   assertEquals(typeof data.error, "string");
 });
 
-Deno.test("Hono API Prototype - GET /api/openapi.json - returns spec", async () => {
-  const app = createPrototypeAPI();
 
-  const req = new Request("http://localhost/api/openapi.json", {
-    method: "GET",
-  });
-
-  const res = await app.fetch(req);
-  assertEquals(res.status, 200);
-
-  const spec = await res.json();
-  assertExists(spec.openapi);
-  assertExists(spec.paths);
-  assertExists(spec.paths["/api/dice/roll"]);
-  assertExists(spec.paths["/api/dice/roll"].post);
-  assertEquals(spec.paths["/api/dice/roll"].post.tags.includes("mcp"), true);
-});

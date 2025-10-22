@@ -2,14 +2,16 @@ import { BattleStore } from "./battle-store.ts";
 import { CampaignStore } from "./campaign-store.ts";
 import type { DiceStore } from "./dice-store.ts";
 import type {
-    CommandType,
-    CampaignCommandType,
-    BattleState,
-    Campaign,
-    CampaignCreature,
-    ROUTE_CONFIGS,
-    CAMPAIGN_ROUTE_CONFIGS,
+CommandType,
+CampaignCommandType,
+BattleState,
+Campaign,
+CampaignCreature,
+GridPosition,
+BattleMode,
+    TerrainType,
 } from "../../shared/types.ts";
+import { ROUTE_CONFIGS, CAMPAIGN_ROUTE_CONFIGS } from "../../shared/types.ts";
 import { ImpossibleCommandError } from "./errors.ts";
 import { rollDice } from "./dice-roller.ts";
 import { Open5eApi } from "./open5e-api.ts";
@@ -54,11 +56,11 @@ export class UniversalHandler {
                 }
 
                 case "UPDATE_CREATURE": {
-                    const { battleId, creatureId, updates } = args as {
-                        battleId: string;
-                        creatureId: string;
-                        updates: unknown;
-                    };
+                const { battleId, creatureId, updates } = args as {
+                battleId: string;
+                creatureId: string;
+                updates: Partial<Creature>;
+                };
                     const result = this.battleStore.updateCreature(
                         battleId,
                         creatureId,
@@ -90,15 +92,15 @@ export class UniversalHandler {
                 }
 
                 case "MOVE_CREATURE": {
-                    const { battleId, creatureId, position } = args as {
-                        battleId: string;
-                        creatureId: string;
-                        position: { x: number; y: number };
-                    };
+                const { battleId, creatureId, position } = args as {
+                battleId: string;
+                creatureId: string;
+                position: GridPosition;
+                };
                     const result = this.battleStore.moveCreature(
                         battleId,
                         creatureId,
-                        position,
+                        { position },
                     );
                     return result
                         ? { success: true, data: result }
@@ -136,12 +138,12 @@ export class UniversalHandler {
                 }
 
                 case "CREATE_BATTLE": {
-                    const { name, mode, mapSize, sceneDescription } = args as {
-                        name: string;
-                        mode?: string;
-                        mapSize?: { width: number; height: number };
-                        sceneDescription?: string;
-                    };
+                const { name, mode, mapSize, sceneDescription } = args as {
+                name: string;
+                mode?: BattleMode;
+                mapSize?: { width: number; height: number };
+                sceneDescription?: string;
+                };
                     const result = this.battleStore.createBattle(
                         name,
                         mode,
@@ -153,13 +155,13 @@ export class UniversalHandler {
 
                 case "UPDATE_BATTLE": {
                     const { battleId, name, mode, mapSize, sceneDescription } =
-                        args as {
-                            battleId: string;
-                            name?: string;
-                            mode?: string;
-                            mapSize?: { width: number; height: number };
-                            sceneDescription?: string;
-                        };
+                    args as {
+                    battleId: string;
+                    name?: string;
+                    mode?: BattleMode;
+                    mapSize?: { width: number; height: number };
+                    sceneDescription?: string;
+                    };
                     const result = this.battleStore.updateBattle(battleId, {
                         name,
                         mode,
@@ -172,16 +174,18 @@ export class UniversalHandler {
                 }
 
                 case "SET_TERRAIN": {
-                    const { battleId, positions, terrain } = args as {
-                        battleId: string;
-                        positions: Array<{ x: number; y: number }>;
-                        terrain: string;
-                    };
-                    const result = this.battleStore.setTerrain(
-                        battleId,
-                        positions,
-                        terrain,
-                    );
+                const { battleId, positions, terrain, doorOpen, elevation, hazardDamage } = args as {
+                battleId: string;
+                positions: GridPosition[];
+                terrain: string;
+                doorOpen?: boolean;
+                elevation?: number;
+                hazardDamage?: number;
+                };
+                const result = this.battleStore.setTerrain(
+                battleId,
+                { positions, terrain: terrain as TerrainType, doorOpen, elevation, hazardDamage },
+                );
                     return result
                         ? { success: true, data: result }
                         : {
@@ -191,13 +195,13 @@ export class UniversalHandler {
                 }
 
                 case "TOGGLE_DOOR": {
-                    const { battleId, position } = args as {
-                        battleId: string;
-                        position: { x: number; y: number };
-                    };
+                const { battleId, position } = args as {
+                battleId: string;
+                position: GridPosition;
+                };
                     const result = this.battleStore.toggleDoor(
                         battleId,
-                        position,
+                        { position },
                     );
                     return result
                         ? { success: true, data: result }
@@ -214,7 +218,7 @@ export class UniversalHandler {
                     };
                     const result = this.battleStore.updateSceneDescription(
                         battleId,
-                        description,
+                        { description },
                     );
                     return result
                         ? { success: true, data: result }
@@ -228,7 +232,7 @@ export class UniversalHandler {
                     };
                     const result = this.battleStore.updateCreaturePositions(
                         battleId,
-                        positions,
+                        { positions },
                     );
                     return result
                         ? { success: true, data: result }

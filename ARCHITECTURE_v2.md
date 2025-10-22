@@ -34,18 +34,22 @@ deno task bridge:py
 cd frontend && npm run dev
 ```
 
-### Running Tests
+### Running Tests ✅ Updated
 
 ```bash
-# Test Hono routes in isolation (unit tests)
-deno task test:prototype
+# Unit tests for Hono routes (no server required)
+deno test --allow-read --allow-write --allow-env src/api-prototype.test.ts src/mcp-integration.test.ts src/api-campaign.test.ts
 
-# Test hybrid server with real HTTP calls (integration tests)
-# Note: Requires server to be running on port 8000
-deno task test:hybrid
+# Integration tests for hybrid server (requires server running on port 8000)
+deno test --allow-read --allow-write --allow-env --allow-net src/hybrid-server.test.ts
 
 # Full test suite
-deno task test
+deno test --allow-read --allow-write --allow-env
+
+# Test status: 12 passing tests ✅
+# - Dice API: 2 tests (success/error cases)
+# - MCP Integration: 3 tests (tool generation, command mapping, handler)
+# - Campaign API: 7 tests (all routes with error handling)
 ```
 
 ## Architecture Overview
@@ -398,8 +402,11 @@ deno task test
 - Both MCP bridges can run simultaneously
 - Test new architecture with low-risk endpoints
 
-### Phase 2: Route-by-Route Migration
-- Migrate existing routes to Hono+Zod
+### Phase 2: Route-by-Route Migration ✅ In Progress
+- ✅ **Dice routes**: Migrated to Hono+Zod (simplified implementation)
+- ✅ **Battle routes**: Fully migrated (12+ routes with OpenAPI spec)
+- ✅ **Campaign routes**: Fully migrated (7 routes with comprehensive tests)
+- ❌ Creature/Open5e routes: Pending (MCP-only, no HTTP routes exist)
 - Update frontend to use generated types
 - Switch MCP bridge when majority migrated
 

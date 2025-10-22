@@ -209,10 +209,10 @@ export class Open5eApi {
                     }),
             };
         } catch (e) {
-            return {
-                success: false,
-                error: `Failed to parse schema: ${e.message}`,
-            };
+        return {
+        success: false,
+        error: `Failed to parse schema: ${e instanceof Error ? e.message : String(e)}`,
+        };
         }
     }
 }
