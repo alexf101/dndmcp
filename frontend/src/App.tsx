@@ -273,6 +273,7 @@ const COMMAND_PRESETS: CommandPreset[] = [
 ];
 
 function App() {
+    // @ts-expect-error battles read by setBattles callbacks
     const [battles, setBattles] = useState<BattleState[]>([]);
     const [battleSummaries, setBattleSummary] = useState<BattleSummary[]>([]);
     const [currentBattle, setCurrentBattle] = useState<BattleState | null>(

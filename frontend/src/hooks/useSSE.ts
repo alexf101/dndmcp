@@ -41,7 +41,7 @@ export function useSSE(options: UseSSEOptions) {
     const [isConnected, setIsConnected] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const eventSourceRef = useRef<EventSource | null>(null);
-    const reconnectTimeoutRef = useRef<number | null>(null);
+    const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const mountedRef = useRef(true);
 
     // Build the SSE URL
