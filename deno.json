@@ -15,7 +15,8 @@
   "imports": {
     "@modelcontextprotocol/sdk/": "npm:@modelcontextprotocol/sdk@latest/",
     "@oak/oak": "jsr:@oak/oak@^17.1.0",
-    "@std/http": "jsr:@std/http@^1.0.8"
+    "@std/http": "jsr:@std/http@^1.0.8",
+    "puppeteer": "npm:puppeteer@23.11.1"
   },
   "compilerOptions": {
     "allowJs": true,

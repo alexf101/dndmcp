@@ -270,6 +270,32 @@ The backend provides RESTful endpoints for battle state management:
 
 This project uses modern TypeScript throughout with strict type checking enabled. The backend uses Deno's built-in tooling, while the frontend uses Vite for fast development builds.
 
+### Puppeteer MCP Integration
+
+For AI agents to get rapid UI feedback during development, this project includes a Puppeteer MCP server that provides browser automation capabilities.
+
+**Setup**: Add to `~/.config/amp/settings.json` (for Amp) or `~/Library/Application Support/Claude/claude_desktop_config.json` (for Claude Desktop):
+
+```json
+{
+  "amp.mcpServers": {
+    "dnd-puppeteer": {
+      "command": "deno",
+      "args": ["run", "--allow-all", "/absolute/path/to/dndmcp/mcp-puppeteer.ts"]
+    }
+  }
+}
+```
+
+**Usage**: The AI agent can now:
+- Navigate to pages and take screenshots
+- Click elements and type into forms
+- Extract page content and element info
+- Execute JavaScript and wait for elements
+- Test UI flows automatically
+
+See [PUPPETEER_MCP_SETUP.md](./PUPPETEER_MCP_SETUP.md) for detailed documentation.
+
 ## License
 
 See [LICENSE](LICENSE) file for details.

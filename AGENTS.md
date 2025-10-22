@@ -42,4 +42,35 @@ bd dep add <dependent-id> <blocking-id> --type blocks
 
 ## Project Structure
 
-(Add project-specific build, test, and development commands here as needed)
+### Development Commands
+
+```bash
+# Start frontend dev server
+npm run dev
+
+# Start backend server
+npm run backend
+
+# Build frontend
+npm run build
+
+# Run backend tests
+npm run test
+```
+
+### Puppeteer MCP for UI Testing
+
+The project includes a Puppeteer MCP server (`mcp-puppeteer.ts`) for automated browser testing and UI feedback. See [PUPPETEER_MCP_SETUP.md](./PUPPETEER_MCP_SETUP.md) for setup and usage.
+
+To enable in Claude Desktop, add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "dnd-puppeteer": {
+      "command": "deno",
+      "args": ["run", "--allow-all", "/Users/alexfinkel/git/dndmcp/mcp-puppeteer.ts"]
+    }
+  }
+}
+```
