@@ -686,6 +686,60 @@ const updateCreaturePositionsRoute = createRoute({
   },
 });
 
+const AddCreatureFromCampaignRequestSchema = z.object({
+  position: GridPositionSchema.optional().openapi({
+    example: { x: 5, y: 3 },
+    description: "Optional position for grid placement. Auto-placed if not provided in grid-based battles.",
+  }),
+});
+
+const addCreatureFromCampaignRoute = createRoute({
+  method: "post",
+  path: "/api/battles/{battleId}/creatures/from-campaign/{campaignCreatureId}",
+  tags: ["battle", "mcp"],
+  summary: "Add creature from campaign to battle",
+  description: "Add a creature from the campaign library to an active battle with optional position placement",
+  request: {
+    params: z.object({
+      battleId: z.string().openapi({ example: "battle-123" }),
+      campaignCreatureId: z.string().openapi({ example: "creature-456" }),
+    }),
+    body: {
+      content: {
+        "application/json": {
+          schema: AddCreatureFromCampaignRequestSchema,
+        },
+      },
+    },
+  },
+  responses: {
+    200: {
+      content: {
+        "application/json": {
+          schema: SuccessResponseSchema(BattleStateSchema),
+        },
+      },
+      description: "Creature added successfully",
+    },
+    404: {
+      content: {
+        "application/json": {
+          schema: ErrorResponseSchema,
+        },
+      },
+      description: "Battle or campaign creature not found",
+    },
+    400: {
+      content: {
+        "application/json": {
+          schema: ErrorResponseSchema,
+        },
+      },
+      description: "Invalid request (e.g., no available position on map)",
+    },
+  },
+});
+
 export function createBattleAPI(battleStore: BattleStore, _campaignStore: CampaignStore) {
   const app = new OpenAPIHono();
 
@@ -900,9 +954,30 @@ export function createBattleAPI(battleStore: BattleStore, _campaignStore: Campai
     return c.json({ success: true, data: battle });
   });
 
+  app.openapi(addCreatureFromCampaignRoute, async (c) => {
+    const { battleId, campaignCreatureId } = c.req.valid("param");
+    const body = c.req.valid("json");
+
+    try {
+      const battle = battleStore.addCreatureFromCampaign(battleId, campaignCreatureId, body.position);
+
+      if (!battle) {
+        return c.json({ success: false, error: "Battle or campaign creature not found" }, 404);
+      }
+
+      return c.json({ success: true, data: battle });
+    } catch (error) {
+      return c.json(
+        { success: false, error: error instanceof Error ? error.message : "Failed to add creature from campaign" },
+        400
+      );
+    }
+  });
+
   return app;
 }
 
 export type CreateBattleRequest = z.infer<typeof CreateBattleRequestSchema>;
 export type AddCreatureRequest = z.infer<typeof AddCreatureRequestSchema>;
 export type UpdateCreatureRequest = z.infer<typeof UpdateCreatureRequestSchema>;
+export type AddCreatureFromCampaignRequest = z.infer<typeof AddCreatureFromCampaignRequestSchema>;

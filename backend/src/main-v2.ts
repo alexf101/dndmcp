@@ -16,6 +16,7 @@ import { sseManager } from "./sse-manager.ts";
 import { createPrototypeAPI } from "./api-prototype.ts";
 import { createBattleAPI } from "./api-battle.ts";
 import { createCampaignAPI } from "./api-campaign.ts";
+import { createDiceAPI } from "./api-dice.ts";
 
 const PORT = Deno.env.get("PORT") ? Number(Deno.env.get("PORT")) : 8000;
 
@@ -37,21 +38,23 @@ const honoApp = createPrototypeAPI();
 
 // Add CORS middleware to Hono app
 honoApp.use(
-    "*",
-    cors({
-        origin: "http://localhost:5173",
-        allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-        allowHeaders: ["Content-Type"],
-        credentials: true,
-    })
+"*",
+cors({
+origin: "http://localhost:5173",
+allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+allowHeaders: ["Content-Type"],
+credentials: true,
+})
 );
 
 const battleApp = createBattleAPI(battleStore, campaignStore);
 const campaignApp = createCampaignAPI(campaignStore);
+const diceApp = createDiceAPI(diceStore);
 
-// Mount battle and campaign routes under the main Hono app
+// Mount battle, campaign, and dice routes under the main Hono app
 honoApp.route("/", battleApp);
 honoApp.route("/", campaignApp);
+honoApp.route("/", diceApp);
 
 // Serve OpenAPI spec as JSON endpoint
 honoApp.get("/api/openapi.json", (c) => {
@@ -98,7 +101,7 @@ async function handler(request: Request): Promise<Response> {
 }
 
 console.log(`🗡️  Hybrid server starting on http://localhost:${PORT}`);
-console.log(`   - Hono (type-safe): /api/dice/roll, /api/battles/*, /api/campaigns/*`);
+console.log(`   - Hono (type-safe): /api/dice/*, /api/battles/*, /api/campaigns/*`);
 console.log(`   - Oak (legacy): remaining routes`);
 
 Deno.serve({ port: PORT }, handler);
