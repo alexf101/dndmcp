@@ -37,8 +37,15 @@ cd frontend && npm run dev
 ### Running Tests
 
 ```bash
-# Test the type-safe API routes
+# Test Hono routes in isolation (unit tests)
 deno task test:prototype
+
+# Test hybrid server with real HTTP calls (integration tests)
+# Note: Requires server to be running on port 8000
+deno task test:hybrid
+
+# Full test suite
+deno task test
 ```
 
 ## Architecture Overview

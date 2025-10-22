@@ -12,7 +12,8 @@
     "backend:dev": "deno run --no-prompt --allow-env --allow-net --allow-read --allow-write --watch backend/src/main.ts",
     "test": "deno test --allow-net --allow-read --allow-write --allow-env backend/src/test-integration.ts",
     "test:mcp": "deno test --no-check --allow-read --allow-write --allow-env backend/src/mcp-integration.test.ts",
-    "test:prototype": "deno test --no-check --allow-read backend/src/api-prototype.test.ts"
+    "test:prototype": "deno test --no-check --allow-read backend/src/api-prototype.test.ts",
+    "test:hybrid": "deno test --allow-net backend/src/hybrid-server.test.ts"
   },
   "imports": {
     "@modelcontextprotocol/sdk/": "npm:@modelcontextprotocol/sdk@latest/",
