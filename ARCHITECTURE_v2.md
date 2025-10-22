@@ -6,6 +6,7 @@ Type-safe, auto-documented API architecture using Hono, Zod, OpenAPI, and FastMC
 
 ### Prerequisites
 - Deno (for backend API)
+- Node.js (for frontend)
 - Python 3.9+ (for MCP bridge)
 
 ### Setup
@@ -14,14 +15,23 @@ Type-safe, auto-documented API architecture using Hono, Zod, OpenAPI, and FastMC
 # 1. Install Python dependencies (one-time setup)
 deno task bridge:setup
 
-# 2. Generate OpenAPI specs from your API
+# 2. Install frontend dependencies
+cd frontend && npm install && cd ..
+
+# 3. Generate OpenAPI specs from your API
 deno run --allow-read --allow-write backend/src/generate-openapi.ts
 
-# 3. Start the API server (in one terminal)
+# 4. Generate frontend API client
+cd frontend && npm run generate:api && cd ..
+
+# 5. Start the API server (in one terminal)
 deno task backend:dev
 
-# 4. Start the MCP bridge (in another terminal)
+# 6. Start the MCP bridge (in another terminal)
 deno task bridge:py
+
+# 7. Start the frontend (in a third terminal)
+cd frontend && npm run dev
 ```
 
 ### Running Tests
@@ -190,19 +200,42 @@ if __name__ == "__main__":
 - Zero custom logic - pure HTTP passthrough
 - FastMCP handles all MCP protocol details
 
-### 4. Frontend Type Generation (Future)
+### 4. Frontend Type Generation (Orval)
 
-**Tool**: Orval
+**Tool**: Orval  
+**Config**: `orval.config.ts`  
+**Generated Code**: `frontend/src/api/`
 
-Will generate TypeScript client code from `openapi-full.json`:
+Generates TypeScript client code from `openapi-full.json`:
 
 ```bash
-# To be added
-npm install -D orval
-orval --config orval.config.ts
+# Generate API client (run after updating OpenAPI spec)
+cd frontend && npm run generate:api
 ```
 
-This creates fully typed API client functions in the frontend.
+**Generated files:**
+- `frontend/src/api/dice/dice.ts` - Fully typed API functions
+- `frontend/src/api/generated.schemas.ts` - TypeScript types
+
+**Usage in React components:**
+
+```typescript
+import { postApiDiceRoll } from '../api/dice/dice';
+import type { PostApiDiceRoll200 } from '../api/generated.schemas';
+
+const response = await postApiDiceRoll({
+  notation: "2d6+3",
+  modifier: 0,
+  description: "Attack roll",
+});
+
+if (response.status === 200) {
+  // response.data is fully typed as PostApiDiceRoll200
+  console.log(response.data.total);
+}
+```
+
+See `frontend/src/components/TypeSafeDiceRoller.tsx` for a complete example.
 
 ## Design Principles
 
@@ -271,13 +304,19 @@ setup-mcp-bridge.sh                # Python setup script
    deno run --allow-read --allow-write backend/src/generate-openapi.ts
    ```
 
-3. **Restart the MCP bridge** (it reads the spec at startup):
+3. **Regenerate frontend types**:
+   ```bash
+   cd frontend && npm run generate:api
+   ```
+
+4. **Restart the MCP bridge** (it reads the spec at startup):
    ```bash
    deno task bridge:py
    ```
 
-4. **Test** the new endpoint:
+5. **Test** the new endpoint:
    - HTTP: `curl http://localhost:8000/api/my-endpoint`
+   - Frontend: Import and use the generated function
    - MCP: Use Claude or another MCP client
 
 ### Testing

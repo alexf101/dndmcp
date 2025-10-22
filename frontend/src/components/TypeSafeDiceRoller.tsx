@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { postApiDiceRoll } from '../api/dice/dice';
 import type { PostApiDiceRoll200 } from '../api/generated.schemas';
 
-export function TypeSafeDiceRoller() {
+export function DiceRoller() {
   const [notation, setNotation] = useState('2d6+3');
   const [description, setDescription] = useState('');
   const [result, setResult] = useState<PostApiDiceRoll200 | null>(null);
