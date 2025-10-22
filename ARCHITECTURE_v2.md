@@ -24,8 +24,8 @@ deno run --allow-read --allow-write backend/src/generate-openapi.ts
 # 4. Generate frontend API client
 cd frontend && npm run generate:api && cd ..
 
-# 5. Start the API server (in one terminal)
-deno task backend:dev
+# 5. Start the V2 API server (hybrid Hono+Oak) (in one terminal)
+deno task dev:v2
 
 # 6. Start the MCP bridge (in another terminal)
 deno task bridge:py
@@ -266,16 +266,33 @@ See `frontend/src/components/TypeSafeDiceRoller.tsx` for a complete example.
 ```
 backend/
 ├── src/
-│   ├── api-prototype.ts           # Example Hono+Zod route
+│   ├── main-v2.ts                 # Hybrid server (Hono + Oak)
+│   ├── api-prototype.ts           # Hono+Zod routes
 │   ├── api-prototype.test.ts      # Integration tests
 │   ├── generate-openapi.ts        # OpenAPI spec generator
-│   └── filter-openapi-for-mcp.ts  # MCP filtering logic
+│   ├── filter-openapi-for-mcp.ts  # MCP filtering logic
+│   ├── main.ts                    # Legacy Oak server
+│   └── routes.ts                  # Legacy Oak routes
 ├── openapi-full.json              # Generated: all routes
 └── openapi-mcp.json               # Generated: MCP routes only
 
 mcp-bridge.py                      # Python FastMCP bridge
 requirements.txt                   # Python dependencies
 setup-mcp-bridge.sh                # Python setup script
+```
+
+## Running the Server
+
+**V2 Server (recommended)** - Hybrid Hono + Oak:
+```bash
+deno task dev:v2    # Development with watch mode
+deno task start:v2  # Production
+```
+
+**Legacy Server** - Oak only:
+```bash
+deno task dev       # Development
+deno task start     # Production
 ```
 
 ## Development Workflow

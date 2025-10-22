@@ -2,6 +2,8 @@
   "tasks": {
     "dev": "deno run --no-prompt --allow-env --allow-net --allow-read --allow-write --watch backend/src/main-unified.ts",
     "start": "deno run --allow-net --allow-read --allow-write --allow-env backend/src/main-unified.ts",
+    "dev:v2": "deno run --no-prompt --allow-env --allow-net --allow-read --allow-write --watch backend/src/main-v2.ts",
+    "start:v2": "deno run --allow-net --allow-read --allow-write --allow-env backend/src/main-v2.ts",
     "bridge": "deno run --allow-net mcp-bridge.ts",
     "bridge:py": "source venv/bin/activate && python mcp-bridge.py",
     "bridge:setup": "bash setup-mcp-bridge.sh",
