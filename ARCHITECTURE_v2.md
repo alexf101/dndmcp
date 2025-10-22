@@ -346,12 +346,22 @@ deno task start     # Production
 ### Testing
 
 ```bash
-# Run Hono API tests
+# Unit tests - Hono routes in isolation
 deno task test:prototype
 
-# Run full integration tests
+# Integration tests - Hybrid server (requires server running)
+deno task test:hybrid
+
+# Full integration tests - Legacy routes
 deno task test
 ```
+
+**Integration test coverage:**
+- ✅ New Hono endpoint: `/api/dice/roll` with Zod validation
+- ✅ Error handling for invalid dice notation
+- ✅ OpenAPI spec generation and MCP tagging
+- ✅ Legacy Oak endpoints still work
+- ✅ CORS headers configured correctly
 
 ## Benefits of This Architecture
 

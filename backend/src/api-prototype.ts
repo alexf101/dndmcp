@@ -98,21 +98,6 @@ export function createPrototypeAPI() {
     }
   });
 
-  app.doc31("/api/openapi.json", {
-    openapi: "3.1.0",
-    info: {
-      title: "D&D Battle Manager API",
-      version: "1.0.0",
-      description: "Type-safe API for D&D 5e battle management",
-    },
-    servers: [
-      {
-        url: "http://localhost:8000",
-        description: "Local development server",
-      },
-    ],
-  });
-
   return app;
 }
 

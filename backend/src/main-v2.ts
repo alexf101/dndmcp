@@ -6,12 +6,15 @@
 // Using Deno.serve (built-in)
 import { Application } from "@oak/oak";
 import { oakCors } from "https://deno.land/x/cors@v1.2.2/mod.ts";
+import { Hono } from "@hono/hono";
+import { cors } from "@hono/hono/cors";
 import { BattleStore } from "./battle-store.ts";
 import { CampaignStore } from "./campaign-store.ts";
 import { DiceStore } from "./dice-store.ts";
 import { generateRoutes } from "./route-generator.ts";
 import { sseManager } from "./sse-manager.ts";
 import { createPrototypeAPI } from "./api-prototype.ts";
+import { createBattleAPI } from "./api-battle.ts";
 
 const PORT = Deno.env.get("PORT") ? Number(Deno.env.get("PORT")) : 8000;
 
@@ -30,6 +33,43 @@ console.log("✅ Shared stores initialized");
 
 // Create Hono app (new type-safe routes)
 const honoApp = createPrototypeAPI();
+
+// Add CORS middleware to Hono app
+honoApp.use(
+    "*",
+    cors({
+        origin: "http://localhost:5173",
+        allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        allowHeaders: ["Content-Type"],
+        credentials: true,
+    })
+);
+
+const battleApp = createBattleAPI(battleStore, campaignStore);
+
+// Mount battle routes under the main Hono app
+honoApp.route("/", battleApp);
+
+// Serve OpenAPI spec as JSON endpoint
+honoApp.get("/api/openapi.json", (c) => {
+    return c.json(
+        honoApp.getOpenAPIDocument({
+            openapi: "3.1.0",
+            info: {
+                title: "D&D Battle Manager API",
+                version: "1.0.0",
+                description:
+                    "Type-safe API for D&D 5e battle management with MCP support",
+            },
+            servers: [
+                {
+                    url: "http://localhost:8000",
+                    description: "Local development server",
+                },
+            ],
+        })
+    );
+});
 
 // Create Oak app (legacy routes)
 const oakApp = new Application();
@@ -55,7 +95,7 @@ async function handler(request: Request): Promise<Response> {
 }
 
 console.log(`🗡️  Hybrid server starting on http://localhost:${PORT}`);
-console.log(`   - Hono (type-safe): /api/dice/roll`);
-console.log(`   - Oak (legacy): all other routes`);
+console.log(`   - Hono (type-safe): /api/dice/roll, /api/battles/*`);
+console.log(`   - Oak (legacy): remaining routes`);
 
 Deno.serve({ port: PORT }, handler);

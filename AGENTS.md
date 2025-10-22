@@ -60,17 +60,17 @@ npm run test
 
 ### Puppeteer MCP for UI Testing
 
-The project includes a Puppeteer MCP server (`mcp-puppeteer.ts`) for automated browser testing and UI feedback. See [PUPPETEER_MCP_SETUP.md](./PUPPETEER_MCP_SETUP.md) for setup and usage.
+The project uses the open source [puppeteer-mcp-server](https://github.com/merajmehrabi/puppeteer-mcp-server) for automated browser testing and UI feedback. See [PUPPETEER_MCP_SETUP.md](./PUPPETEER_MCP_SETUP.md) for setup and usage.
 
-To enable in Claude Desktop, add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
+It's already configured in Claude Desktop via npx:
 
 ```json
 {
-  "mcpServers": {
-    "dnd-puppeteer": {
-      "command": "deno",
-      "args": ["run", "--allow-all", "/Users/alexfinkel/git/dndmcp/mcp-puppeteer.ts"]
-    }
-  }
+"mcpServers": {
+"puppeteer": {
+"command": "npx",
+"args": ["-y", "puppeteer-mcp-server"]
+}
+}
 }
 ```

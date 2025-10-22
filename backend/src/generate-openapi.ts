@@ -1,14 +1,26 @@
 import { createPrototypeAPI } from "./api-prototype.ts";
+import { createBattleAPI } from "./api-battle.ts";
+import { BattleStore } from "./battle-store.ts";
+import { CampaignStore } from "./campaign-store.ts";
 import { filterOpenAPIForMCP } from "./filter-openapi-for-mcp.ts";
 
-const app = createPrototypeAPI();
+// Create mock stores for OpenAPI generation
+const campaignStore = new CampaignStore();
+const battleStore = new BattleStore(campaignStore);
 
-const openAPIDoc = app.getOpenAPI31Document({
+// Create Hono apps
+const prototypeApp = createPrototypeAPI();
+const battleApp = createBattleAPI(battleStore, campaignStore);
+
+// Mount battle routes onto main app
+prototypeApp.route("/", battleApp);
+
+const openAPIDoc = prototypeApp.getOpenAPI31Document({
   openapi: "3.1.0",
   info: {
     title: "D&D Battle Manager API",
     version: "1.0.0",
-    description: "Type-safe API for D&D 5e battle management",
+    description: "Type-safe API for D&D 5e battle management with MCP support",
   },
   servers: [
     {

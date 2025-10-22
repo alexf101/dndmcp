@@ -15,10 +15,10 @@
     "dnd-battle-manager": "./mcp-server.ts"
   },
   "dependencies": {
-    "@hono/zod-openapi": "^1.1.4",
-    "@modelcontextprotocol/sdk": "latest",
-    "hono": "^4.10.2",
-    "zod": "^4.1.12"
+  "@hono/zod-openapi": "^1.1.4",
+  "@modelcontextprotocol/sdk": "latest",
+  "hono": "^4.10.2",
+  "zod": "^4.1.12"
   },
   "keywords": ["mcp", "dnd", "battle-manager", "rpg", "tabletop"],
   "author": "DnD MCP Team",
