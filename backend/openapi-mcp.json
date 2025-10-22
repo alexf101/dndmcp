@@ -1,0 +1,135 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "D&D Battle Manager API",
+    "version": "1.0.0",
+    "description": "Type-safe API for D&D 5e battle management"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8000",
+      "description": "Local development server"
+    }
+  ],
+  "components": {
+    "schemas": {},
+    "parameters": {}
+  },
+  "paths": {
+    "/api/dice/roll": {
+      "post": {
+        "tags": [
+          "dice",
+          "mcp"
+        ],
+        "summary": "Roll dice",
+        "description": "Roll dice using standard notation (e.g., 2d6+3)",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "notation": {
+                    "type": "string",
+                    "example": "2d6+3",
+                    "description": "Dice roll expression (e.g., 2d6+3, 1d20, 2d20kh1)"
+                  },
+                  "modifier": {
+                    "type": "number",
+                    "default": 0,
+                    "example": 0,
+                    "description": "Additional modifier to add to the roll"
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Attack roll",
+                    "description": "Optional description for the roll"
+                  }
+                },
+                "required": [
+                  "notation"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Dice roll successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "example": "550e8400-e29b-41d4-a716-446655440000"
+                    },
+                    "notation": {
+                      "type": "string",
+                      "example": "2d6+3"
+                    },
+                    "rolls": {
+                      "type": "array",
+                      "items": {
+                        "type": "number"
+                      },
+                      "example": [
+                        6,
+                        6
+                      ]
+                    },
+                    "total": {
+                      "type": "number",
+                      "example": 15
+                    },
+                    "modifier": {
+                      "type": "number",
+                      "example": 3
+                    },
+                    "description": {
+                      "type": "string",
+                      "example": "Attack roll"
+                    },
+                    "timestamp": {
+                      "type": "number",
+                      "example": 1634567890000
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "notation",
+                    "rolls",
+                    "total",
+                    "modifier",
+                    "timestamp"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid dice expression",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Invalid dice expression"
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

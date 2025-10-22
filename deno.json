@@ -3,11 +3,14 @@
     "dev": "deno run --no-prompt --allow-env --allow-net --allow-read --allow-write --watch backend/src/main-unified.ts",
     "start": "deno run --allow-net --allow-read --allow-write --allow-env backend/src/main-unified.ts",
     "bridge": "deno run --allow-net mcp-bridge.ts",
+    "bridge:py": "source venv/bin/activate && python mcp-bridge.py",
+    "bridge:setup": "bash setup-mcp-bridge.sh",
     "mcp": "deno run --allow-all mcp-server.ts",
     "backend": "deno run --allow-net --allow-read --allow-write --allow-env backend/src/main.ts",
     "backend:dev": "deno run --no-prompt --allow-env --allow-net --allow-read --allow-write --watch backend/src/main.ts",
     "test": "deno test --allow-net --allow-read --allow-write --allow-env backend/src/test-integration.ts",
-    "test:mcp": "deno test --no-check --allow-read --allow-write --allow-env backend/src/mcp-integration.test.ts"
+    "test:mcp": "deno test --no-check --allow-read --allow-write --allow-env backend/src/mcp-integration.test.ts",
+    "test:prototype": "deno test --no-check --allow-read backend/src/api-prototype.test.ts"
   },
   "imports": {
     "@modelcontextprotocol/sdk/": "npm:@modelcontextprotocol/sdk@latest/",
