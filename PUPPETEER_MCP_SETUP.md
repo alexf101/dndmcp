@@ -4,7 +4,7 @@ This document describes how to use the Puppeteer MCP server for UI testing and f
 
 ## What is it?
 
-We're using the [merajmehrabi/puppeteer-mcp-server](https://github.com/merajmehrabi/puppeteer-mcp-server) open source MCP server, which provides browser automation capabilities via the Model Context Protocol. This allows AI agents to:
+We're using the [puppeteer-real-browser-mcp-server](https://github.com/withLinda/puppeteer-real-browser-mcp-server) open source MCP server, which provides enhanced browser automation capabilities with better stability and anti-detection features. This allows AI agents to:
 - Navigate to web pages
 - Take screenshots
 - Click elements
@@ -13,6 +13,7 @@ We're using the [merajmehrabi/puppeteer-mcp-server](https://github.com/merajmehr
 - Execute JavaScript
 - Connect to existing Chrome tabs
 - Hover over elements
+- Better session management and error handling
 
 ## Installation
 
@@ -24,12 +25,12 @@ The server is configured in `~/Library/Application Support/Claude/claude_desktop
 
 ```json
 {
-"mcpServers": {
-"puppeteer": {
-"command": "npx",
-"args": ["-y", "puppeteer-mcp-server"]
-}
-}
+  "mcpServers": {
+    "puppeteer": {
+      "command": "npx",
+      "args": ["-y", "puppeteer-real-browser-mcp-server"]
+    }
+  }
 }
 ```
 
