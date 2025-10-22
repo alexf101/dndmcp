@@ -134,10 +134,9 @@ We support two setup methods depending on your Claude Desktop plan:
     {
         "mcpServers": {
             "dnd-battle-manager": {
-                "command": "sh",
+                "command": "deno",
                 "args": [
-                    "-c",
-                    "cd /absolute/path/to/dndmcp && deno task bridge"
+                    "task --config /absolute/path/to/dndmcp/deno.json bridge"
                 ]
             }
         }
@@ -145,22 +144,6 @@ We support two setup methods depending on your Claude Desktop plan:
     ```
 
     **Important**: Replace `/absolute/path/to/dndmcp` with the actual absolute path to your project directory.
-
-    For example, if you cloned the repo to `/Users/alex/projects/dndmcp`:
-
-    ```json
-    {
-        "mcpServers": {
-            "dnd-battle-manager": {
-                "command": "bash",
-                "args": [
-                    "-c",
-                    "cd /Users/alex/projects/dndmcp && deno task bridge"
-                ]
-            }
-        }
-    }
-    ```
 
 3. **Restart Claude Desktop** and you're ready!
 

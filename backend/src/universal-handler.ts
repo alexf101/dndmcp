@@ -13,6 +13,7 @@ import type {
 import { ImpossibleCommandError } from "./errors.ts";
 import { rollDice } from "./dice-roller.ts";
 import { Open5eApi } from "./open5e-api.ts";
+import { Creature } from "./types.ts";
 
 // Result type for universal handler
 export interface HandlerResult {
@@ -41,7 +42,7 @@ export class UniversalHandler {
                 case "ADD_CREATURE": {
                     const { battleId, creature } = args as {
                         battleId: string;
-                        creature: unknown;
+                        creature: Creature;
                     };
                     const result = this.battleStore.addCreature(
                         battleId,
@@ -496,6 +497,8 @@ export class UniversalHandler {
                     error: `Impossible command: ${error.message}`,
                 };
             }
+
+            console.error(`Error handling command ${commandType}:`, error);
 
             return {
                 success: false,

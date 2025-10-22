@@ -1,4 +1,12 @@
-import type { APIResponse, BattleState, Creature, BattleCommand, Campaign, CampaignCreature } from "./types";
+import type {
+    APIResponse,
+    BattleState,
+    Creature,
+    BattleCommand,
+    Campaign,
+    CampaignCreature,
+    BattleSummary,
+} from "./types";
 import { getCommandUrl, getCommandMethod, buildCommandBody } from "./types";
 
 const API_BASE = "http://localhost:8000";
@@ -21,9 +29,9 @@ export async function getBattle(id: string): Promise<BattleState> {
     return result.data!;
 }
 
-export async function getAllBattles(): Promise<BattleState[]> {
+export async function getAllBattles(): Promise<BattleSummary[]> {
     const response = await fetch(`${API_BASE}/api/battles`);
-    const result: APIResponse<BattleState[]> = await response.json();
+    const result: APIResponse<BattleSummary[]> = await response.json();
     if (!result.success) throw new Error(result.error);
     return result.data!;
 }
@@ -60,7 +68,6 @@ export async function updateCreature(
     return result.data!;
 }
 
-
 export async function executeCommand(
     battleId: string,
     command: BattleCommand,
@@ -88,11 +95,16 @@ export async function getAllCampaigns(): Promise<Campaign[]> {
     return result.data!;
 }
 
-export async function searchCampaignCreatures(query: string, campaignId?: string): Promise<CampaignCreature[]> {
+export async function searchCampaignCreatures(
+    query: string,
+    campaignId?: string,
+): Promise<CampaignCreature[]> {
     const params = new URLSearchParams({ q: query });
-    if (campaignId) params.append('campaignId', campaignId);
+    if (campaignId) params.append("campaignId", campaignId);
 
-    const response = await fetch(`${API_BASE}/api/campaigns/creatures/search?${params}`);
+    const response = await fetch(
+        `${API_BASE}/api/campaigns/creatures/search?${params}`,
+    );
     const result: APIResponse<CampaignCreature[]> = await response.json();
     if (!result.success) throw new Error(result.error);
     return result.data!;
@@ -101,7 +113,7 @@ export async function searchCampaignCreatures(query: string, campaignId?: string
 export async function addCreatureFromCampaign(
     battleId: string,
     campaignCreatureId: string,
-    position?: { x: number; y: number }
+    position?: { x: number; y: number },
 ): Promise<BattleState> {
     const response = await fetch(
         `${API_BASE}/api/battles/${battleId}/creatures/from-campaign/${campaignCreatureId}`,
@@ -109,7 +121,7 @@ export async function addCreatureFromCampaign(
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ position }),
-        }
+        },
     );
     const result: APIResponse<BattleState> = await response.json();
     if (!result.success) throw new Error(result.error);

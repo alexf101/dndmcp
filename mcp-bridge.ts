@@ -36,15 +36,16 @@ async function forwardToHTTP(message: JSONRPCMessage): Promise<JSONRPCMessage> {
                 `HTTP error from MCP server: ${response.status} ${response.statusText}`,
                 errorBody,
             );
-            if (errorBody.error) {
-                throw new Error(
-                    `HTTP ${response.status}: ${errorBody.error.message}`,
-                );
-            } else {
-                throw new Error(
-                    `HTTP ${response.status}: ${response.statusText}`,
-                );
-            }
+            // if (errorBody.error) {
+            //     throw new Error(
+            //         `HTTP ${response.status}: ${errorBody.error.message}`,
+            //     );
+            // } else {
+            //     throw new Error(
+            //         `HTTP ${response.status}: ${response.statusText}`,
+            //     );
+            // }
+            return errorBody as JSONRPCMessage;
         }
 
         const result = await response.json();

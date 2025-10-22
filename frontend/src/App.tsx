@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import styled from "styled-components";
-import type { BattleState, CommandPreset } from "./types";
+import type { BattleState, BattleSummary, CommandPreset } from "./types";
 import { createBattle, getBattle, getAllBattles, executeCommand } from "./api";
 import BattleDisplay from "./components/BattleDisplay";
 import CommandForm, { type CommandFormRef } from "./components/CommandForm";
@@ -23,7 +23,8 @@ const Header = styled.header`
     gap: ${({ theme }) => theme.spacing.md};
     margin-bottom: ${({ theme }) => theme.spacing.xl};
     padding-bottom: ${({ theme }) => theme.spacing.md};
-    border-bottom: 2px solid ${({ theme }) => theme.colors.background.surfaceHover};
+    border-bottom: 2px solid
+        ${({ theme }) => theme.colors.background.surfaceHover};
 
     h1 {
         margin: 0;
@@ -60,11 +61,14 @@ const SSEStatus = styled.div<{ connected: boolean }>`
         connected ? theme.colors.status.success : theme.colors.status.warning};
     color: ${({ connected, theme }) =>
         connected ? theme.colors.text.primary : theme.colors.text.primary};
-    border: 1px solid ${({ connected, theme }) =>
-        connected ? theme.colors.status.success : theme.colors.status.warning};
+    border: 1px solid
+        ${({ connected, theme }) =>
+            connected
+                ? theme.colors.status.success
+                : theme.colors.status.warning};
 
     &::before {
-        content: "${({ connected }) => connected ? '🟢' : '🟡'}";
+        content: "${({ connected }) => (connected ? "🟢" : "🟡")}";
         font-size: 0.75rem;
     }
 `;
@@ -270,83 +274,110 @@ const COMMAND_PRESETS: CommandPreset[] = [
 
 function App() {
     const [battles, setBattles] = useState<BattleState[]>([]);
+    const [battleSummaries, setBattleSummary] = useState<BattleSummary[]>([]);
     const [currentBattle, setCurrentBattle] = useState<BattleState | null>(
         null,
     );
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [highlightedCreatureId, setHighlightedCreatureId] = useState<string | null>(null);
+    const [highlightedCreatureId, setHighlightedCreatureId] = useState<
+        string | null
+    >(null);
     const commandFormRef = useRef<CommandFormRef>(null);
 
-    const [diceRollCallback, setDiceRollCallback] = useState<((roll: any) => void) | null>(null);
+    const [diceRollCallback, setDiceRollCallback] = useState<
+        ((roll: any) => void) | null
+    >(null);
 
     // SSE connection for real-time updates
-    const handleSSEMessage = useCallback((message: SSEMessage) => {
-        switch (message.type) {
-            case 'battle_updated':
-                if (message.battleState) {
-                    // Update current battle if it matches the updated battle
-                    if (currentBattle && message.battleId === currentBattle.id) {
-                        console.log('🔄 Updating current battle from SSE');
-                        setCurrentBattle(message.battleState);
+    const handleSSEMessage = useCallback(
+        (message: SSEMessage) => {
+            switch (message.type) {
+                case "battle_updated":
+                    if (message.battleState) {
+                        // Update current battle if it matches the updated battle
+                        if (
+                            currentBattle &&
+                            message.battleId === currentBattle.id
+                        ) {
+                            console.log("🔄 Updating current battle from SSE");
+                            setCurrentBattle(message.battleState);
+                        }
+
+                        // Update battle in the battles list
+                        setBattles((prev) =>
+                            prev.map((battle) =>
+                                battle.id === message.battleId
+                                    ? message.battleState
+                                    : battle,
+                            ),
+                        );
                     }
+                    break;
 
-                    // Update battle in the battles list
-                    setBattles(prev =>
-                        prev.map(battle =>
-                            battle.id === message.battleId ? message.battleState : battle
-                        )
-                    );
-                }
-                break;
+                case "battle_list_updated":
+                    if (message.battles) {
+                        console.log("🔄 Updating battle list from SSE");
+                        setBattles(message.battles);
 
-            case 'battle_list_updated':
-                if (message.battles) {
-                    console.log('🔄 Updating battle list from SSE');
-                    setBattles(message.battles);
-
-                    // If current battle is null but we have battles, select the first one
-                    if (!currentBattle && message.battles.length > 0) {
-                        setCurrentBattle(message.battles[0]);
+                        // If current battle is null but we have battles, select the first one
+                        if (!currentBattle && message.battles.length > 0) {
+                            setCurrentBattle(message.battles[0]);
+                        }
                     }
-                }
-                break;
+                    break;
 
-            case 'dice_rolled':
-                if (message.roll && diceRollCallback) {
-                    console.log('🎲 Dice roll received from SSE');
-                    diceRollCallback(message.roll);
-                }
-                break;
+                case "dice_rolled":
+                    if (message.roll && diceRollCallback) {
+                        console.log("🎲 Dice roll received from SSE");
+                        diceRollCallback(message.roll);
+                    }
+                    break;
 
-            case 'connected':
-                console.log('🎯 SSE Connected to D&D Battle Manager');
-                break;
-        }
-    }, [currentBattle, diceRollCallback]);
+                case "connected":
+                    console.log("🎯 SSE Connected to D&D Battle Manager");
+                    break;
+            }
+        },
+        [currentBattle, diceRollCallback],
+    );
 
     const { isConnected: sseConnected } = useSSE({
-        url: 'http://localhost:8000/api/events',
+        url: "http://localhost:8000/api/events",
         battleId: currentBattle?.id,
         onMessage: handleSSEMessage,
         onConnect: () => {
-            console.log('✅ SSE Connected for real-time updates');
+            console.log("✅ SSE Connected for real-time updates");
             setError(null); // Clear any previous SSE errors
         },
         onError: (error) => {
-            console.warn('⚠️ SSE Error (will auto-reconnect):', error);
+            console.warn("⚠️ SSE Error (will auto-reconnect):", error);
         },
         autoReconnect: true,
         reconnectInterval: 3000,
     });
 
+    const loadBattle = useCallback(async (battleId: string) => {
+        try {
+            setLoading(true);
+            const battleData = await getBattle(battleId);
+            setCurrentBattle(battleData);
+        } catch (err) {
+            setError(
+                err instanceof Error ? err.message : "Failed to load battle",
+            );
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
     const loadBattles = useCallback(async () => {
         try {
             setLoading(true);
             const battlesData = await getAllBattles();
-            setBattles(battlesData);
+            setBattleSummary(battlesData);
             if (battlesData.length > 0 && !currentBattle) {
-                setCurrentBattle(battlesData[0]);
+                await loadBattle(battlesData[0].id);
             }
         } catch (err) {
             setError(
@@ -445,9 +476,7 @@ function App() {
     const handleCreatureAdded = (updatedBattle: BattleState) => {
         setCurrentBattle(updatedBattle);
         setBattles((prev) =>
-            prev.map((b) =>
-                b.id === updatedBattle.id ? updatedBattle : b,
-            ),
+            prev.map((b) => (b.id === updatedBattle.id ? updatedBattle : b)),
         );
         setError(null);
     };
@@ -466,17 +495,19 @@ function App() {
         <AppContainer>
             <Header>
                 <h1>🗡️ D&D Battle Manager - Debug Interface</h1>
-                {battles.length > 0 && (
+                {battleSummaries.length > 0 && (
                     <select
                         value={currentBattle?.id || ""}
                         onChange={(e) => {
-                            const battle = battles.find(
+                            const battle = battleSummaries.find(
                                 (b) => b.id === e.target.value,
                             );
-                            if (battle) setCurrentBattle(battle);
+                            if (battle && currentBattle?.id !== battle.id) {
+                                loadBattle(battle.id);
+                            }
                         }}
                     >
-                        {battles.map((battle) => (
+                        {battleSummaries.map((battle) => (
                             <option key={battle.id} value={battle.id}>
                                 {battle.name}
                             </option>
@@ -490,7 +521,7 @@ function App() {
                     Refresh
                 </button>
                 <SSEStatus connected={sseConnected}>
-                    {sseConnected ? 'Live Updates' : 'Connecting...'}
+                    {sseConnected ? "Live Updates" : "Connecting..."}
                 </SSEStatus>
             </Header>
 

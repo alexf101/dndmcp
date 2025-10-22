@@ -11,6 +11,7 @@ import {
     getMapCell,
     isValidPosition,
     CreatureSize,
+    BattleSummary,
 } from "./types.ts";
 import { CampaignStore } from "./campaign-store.ts";
 import { ImpossibleCommandError } from "./errors.ts";
@@ -271,8 +272,14 @@ export class BattleStore {
         return this.battles.get(id) || null;
     }
 
-    getAllBattles(): BattleState[] {
-        return Array.from(this.battles.values());
+    getAllBattles(): BattleSummary[] {
+        return Array.from(this.battles.values()).map((battle) => ({
+            id: battle.id,
+            name: battle.name,
+            mode: battle.mode,
+            creatureCount: battle.creatures.length,
+            status: battle.isActive ? "active" : "inactive",
+        }));
     }
 
     addCreature(battleId: string, creature: Creature): BattleState | null {
@@ -373,8 +380,12 @@ export class BattleStore {
             data: { creatureId },
             previousState: { creatures: [...battle.creatures] },
         };
-
+        const oldLength = battle.creatures.length;
         battle.creatures = battle.creatures.filter((c) => c.id !== creatureId);
+        if (battle.creatures.length === oldLength) {
+            // No creature was removed
+            return null;
+        }
         battle.history.push(action);
 
         this.saveToFile();
@@ -513,6 +524,9 @@ export class BattleStore {
         }
 
         const { positions, terrain, doorOpen, elevation, hazardDamage } = data;
+
+        console.error("Data is:", data);
+        console.error("Positions is:", positions);
 
         // Validate all positions are within map bounds
         for (const pos of positions) {

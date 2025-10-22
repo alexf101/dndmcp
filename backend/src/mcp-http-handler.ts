@@ -29,6 +29,9 @@ interface JSONRPCResponse {
     jsonrpc: string;
     id: number | string;
     result?: any;
+    // For tool use errors
+    isError?: boolean;
+    // For protocol errors
     error?: {
         code: number;
         message: string;
@@ -91,15 +94,19 @@ export function createMCPHttpHandler(
                 const result = await handler.handle(commandType, args || {});
 
                 if (!result.success) {
+                    // Tool use error, not protocol error
                     const response: JSONRPCResponse = {
                         jsonrpc: "2.0",
                         id: request.id,
-                        error: {
-                            code: -32000,
+                        isError: true,
+                        result: {
+                            success: false,
                             message: result.error || "Unknown error",
                         },
                     };
-                    ctx.response.status = 400;
+                    // There's not really a perfect HTTP status code for "we knew what you wanted to do but couldn't do it because
+                    // it violates some constraint", so we're using a 409 "Conflict" for now.
+                    ctx.response.status = 409;
                     ctx.response.body = response;
                     return;
                 }
@@ -195,14 +202,7 @@ function formatMCPToolResponse(
         }
 
         case "LIST_BATTLES": {
-            const battles = data as any[];
-            const battleList = battles
-                .map(
-                    (b) =>
-                        `- ${b.name} (${b.mode}) - ${b.creatures.length} creatures - Status: ${b.status}`,
-                )
-                .join("\n");
-            return `Current battles:\n${battleList || "No battles found"}`;
+            return JSON.stringify(data, null, 2);
         }
 
         case "GET_BATTLE": {

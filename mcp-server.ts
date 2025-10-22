@@ -83,157 +83,154 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         }
 
         // Format success response based on command type
-        let responseText: string;
+        let responseText = JSON.stringify(result.data, null, 2);
 
-        switch (commandType) {
-            case "CREATE_BATTLE": {
-                const battle = result.data as any;
-                responseText = `Created battle "${battle.name}" (${battle.mode}) with ID: ${battle.id}`;
-                break;
-            }
+        // switch (commandType) {
+        //     case "CREATE_BATTLE": {
+        //         const battle = result.data as any;
+        //         responseText = `Created battle "${battle.name}" (${battle.mode}) with ID: ${battle.id}`;
+        //         break;
+        //     }
 
-            case "LIST_BATTLES": {
-                const battles = result.data as any[];
-                const battleList = battles
-                    .map(
-                        (b) =>
-                            `- ${b.name} (${b.mode}) - ${b.creatures.length} creatures - Status: ${b.status}`,
-                    )
-                    .join("\n");
-                responseText = `Current battles:\n${
-                    battleList || "No battles found"
-                }`;
-                break;
-            }
+        //     case "LIST_BATTLES": {
+        //         responseText = JSON.stringify(result.data, null, 2);
+        //         break;
+        //     }
 
-            case "GET_BATTLE": {
-                responseText = JSON.stringify(result.data, null, 2);
-                break;
-            }
+        //     case "GET_BATTLE": {
+        //         responseText = JSON.stringify(result.data, null, 2);
+        //         break;
+        //     }
 
-            case "ADD_CREATURE": {
-                const battle = result.data as any;
-                responseText = `Added creature to battle "${battle.name}"`;
-                break;
-            }
+        //     case "ADD_CREATURE": {
+        //         const battle = result.data as any;
+        //         responseText = `Added creature to battle "${battle.name}"`;
+        //         break;
+        //     }
 
-            case "UPDATE_CREATURE": {
-                const battle = result.data as any;
-                responseText = `Updated creature in battle "${battle.name}"`;
-                break;
-            }
+        //     case "UPDATE_CREATURE": {
+        //         const battle = result.data as any;
+        //         responseText = `Updated creature in battle "${battle.name}"`;
+        //         break;
+        //     }
 
-            case "REMOVE_CREATURE": {
-                const battle = result.data as any;
-                responseText = `Removed creature from battle "${battle.name}"`;
-                break;
-            }
+        //     case "REMOVE_CREATURE": {
+        //         const battle = result.data as any;
+        //         responseText = `Removed creature from battle "${battle.name}"`;
+        //         break;
+        //     }
 
-            case "MOVE_CREATURE": {
-                const battle = result.data as any;
-                const pos = (args as any).position;
-                responseText = `Moved creature to position (${pos.x}, ${pos.y}) in battle "${battle.name}"`;
-                break;
-            }
+        //     case "MOVE_CREATURE": {
+        //         const battle = result.data as any;
+        //         const pos = (args as any).position;
+        //         responseText = `Moved creature to position (${pos.x}, ${pos.y}) in battle "${battle.name}"`;
+        //         break;
+        //     }
 
-            case "START_BATTLE": {
-                const battle = result.data as any;
-                responseText = `Started battle "${battle.name}" - initiative rolled and turn order established`;
-                break;
-            }
+        //     case "START_BATTLE": {
+        //         const battle = result.data as any;
+        //         responseText = `Started battle "${battle.name}" - initiative rolled and turn order established`;
+        //         break;
+        //     }
 
-            case "NEXT_TURN": {
-                const battle = result.data as any;
-                const currentCreature = battle.creatures[battle.currentTurn];
-                responseText = `Advanced to next turn in "${
-                    battle.name
-                }" - now ${currentCreature?.name || "unknown"}'s turn (round ${
-                    battle.round
-                })`;
-                break;
-            }
+        //     case "NEXT_TURN": {
+        //         const battle = result.data as any;
+        //         const currentCreature = battle.creatures[battle.currentTurn];
+        //         responseText = `Advanced to next turn in "${
+        //             battle.name
+        //         }" - now ${currentCreature?.name || "unknown"}'s turn (round ${
+        //             battle.round
+        //         })`;
+        //         break;
+        //     }
 
-            case "SET_TERRAIN": {
-                const battle = result.data as any;
-                const positions = (args as any).positions as any[];
-                const terrain = (args as any).terrain;
-                responseText = `Set ${positions.length} cells to ${terrain} in battle "${battle.name}"`;
-                break;
-            }
+        //     case "SET_TERRAIN": {
+        //         const battle = result.data as any;
+        //         const positions = (args as any).positions as any[];
+        //         const terrain = (args as any).terrain;
+        //         responseText = `Set ${positions.length} cells to ${terrain} in battle "${battle.name}"`;
+        //         break;
+        //     }
 
-            case "TOGGLE_DOOR": {
-                const battle = result.data as any;
-                const pos = (args as any).position;
-                responseText = `Toggled door at (${pos.x}, ${pos.y}) in battle "${battle.name}"`;
-                break;
-            }
+        //     case "TOGGLE_DOOR": {
+        //         const battle = result.data as any;
+        //         const pos = (args as any).position;
+        //         responseText = `Toggled door at (${pos.x}, ${pos.y}) in battle "${battle.name}"`;
+        //         break;
+        //     }
 
-            case "UNDO": {
-                const battle = result.data as any;
-                responseText = `Undid last action in battle "${battle.name}"`;
-                break;
-            }
+        //     case "UNDO": {
+        //         const battle = result.data as any;
+        //         responseText = `Undid last action in battle "${battle.name}"`;
+        //         break;
+        //     }
 
-            case "LIST_CAMPAIGNS": {
-                const campaigns = result.data as any[];
-                const campaignList = campaigns
-                    .map(
-                        (c) =>
-                            `- ${c.name}${c.isDefault ? " (Default)" : ""} - ${
-                                c.creatures.length
-                            } creatures, ${c.maps.length} maps`,
-                    )
-                    .join("\n");
-                responseText = `Current campaigns:\n${
-                    campaignList || "No campaigns found"
-                }`;
-                break;
-            }
+        //     case "LIST_CAMPAIGNS": {
+        //         const campaigns = result.data as any[];
+        //         const campaignList = campaigns
+        //             .map(
+        //                 (c) =>
+        //                     `- ${c.name}${c.isDefault ? " (Default)" : ""} - ${
+        //                         c.creatures.length
+        //                     } creatures, ${c.maps.length} maps`,
+        //             )
+        //             .join("\n");
+        //         responseText = `Current campaigns:\n${
+        //             campaignList || "No campaigns found"
+        //         }`;
+        //         break;
+        //     }
 
-            case "CREATE_CAMPAIGN": {
-                const campaign = result.data as any;
-                responseText = `Created campaign "${campaign.name}" with ID: ${campaign.id}`;
-                break;
-            }
+        //     case "CREATE_CAMPAIGN": {
+        //         const campaign = result.data as any;
+        //         responseText = `Created campaign "${campaign.name}" with ID: ${campaign.id}`;
+        //         break;
+        //     }
 
-            case "SEARCH_CAMPAIGN_CREATURES": {
-                const creatures = result.data as any[];
-                const creatureList = creatures
-                    .map(
-                        (c) =>
-                            `- ${c.name} (${c.template.size}, AC ${c.template.ac}, HP ${c.template.maxHp}) - Used ${c.usageCount} times`,
-                    )
-                    .join("\n");
-                responseText = `Found ${creatures.length} creatures:\n${
-                    creatureList || "No creatures found"
-                }`;
-                break;
-            }
+        //     case "SEARCH_CAMPAIGN_CREATURES": {
+        //         const creatures = result.data as any[];
+        //         const creatureList = creatures
+        //             .map(
+        //                 (c) =>
+        //                     `- ${c.name} (${c.template.size}, AC ${c.template.ac}, HP ${c.template.maxHp}) - Used ${c.usageCount} times`,
+        //             )
+        //             .join("\n");
+        //         responseText = `Found ${creatures.length} creatures:\n${
+        //             creatureList || "No creatures found"
+        //         }`;
+        //         break;
+        //     }
 
-            case "ADD_CREATURE_FROM_CAMPAIGN": {
-                const battle = result.data as any;
-                responseText = `Added creature from campaign template to battle "${battle.name}"`;
-                break;
-            }
+        //     case "ADD_CREATURE_FROM_CAMPAIGN": {
+        //         const battle = result.data as any;
+        //         responseText = `Added creature from campaign template to battle "${battle.name}"`;
+        //         break;
+        //     }
 
-            case "ROLL_DICE": {
-                const roll = result.data as any;
-                const rollDetails = roll.rolls.length > 1
-                    ? ` (${roll.rolls.join(", ")})`
-                    : "";
-                const modifierText = roll.modifier !== 0 ? ` with modifier ${roll.modifier >= 0 ? "+" : ""}${roll.modifier}` : "";
-                const descriptionText = roll.description ? `**${roll.description}**\n` : "";
-                responseText = `${descriptionText}🎲 Rolled ${roll.notation}${rollDetails}${modifierText}\n**Total: ${roll.total}**`;
-                break;
-            }
+        //     case "ROLL_DICE": {
+        //         const roll = result.data as any;
+        //         const rollDetails =
+        //             roll.rolls.length > 1 ? ` (${roll.rolls.join(", ")})` : "";
+        //         const modifierText =
+        //             roll.modifier !== 0
+        //                 ? ` with modifier ${roll.modifier >= 0 ? "+" : ""}${
+        //                       roll.modifier
+        //                   }`
+        //                 : "";
+        //         const descriptionText = roll.description
+        //             ? `**${roll.description}**\n`
+        //             : "";
+        //         responseText = `${descriptionText}🎲 Rolled ${roll.notation}${rollDetails}${modifierText}\n**Total: ${roll.total}**`;
+        //         break;
+        //     }
 
-            default: {
-                responseText = result.data
-                    ? JSON.stringify(result.data, null, 2)
-                    : "Operation completed successfully";
-                break;
-            }
-        }
+        //     default: {
+        //         responseText = result.data
+        //             ? JSON.stringify(result.data, null, 2)
+        //             : "Operation completed successfully";
+        //         break;
+        //     }
+        // }
 
         return {
             content: [

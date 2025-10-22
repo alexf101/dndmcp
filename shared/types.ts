@@ -235,6 +235,14 @@ export interface BattleState {
     creaturePositions?: string; // Narrative description of where creatures are positioned
 }
 
+export interface BattleSummary {
+    id: string;
+    name: string;
+    mode: BattleMode;
+    creatureCount: number;
+    status: "active" | "inactive";
+}
+
 export interface BattleAction {
     id: string;
     timestamp: number;

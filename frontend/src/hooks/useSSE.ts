@@ -1,7 +1,12 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 
 export interface SSEMessage {
-    type: "connected" | "battle_updated" | "battle_list_updated" | "dice_rolled" | "ping";
+    type:
+        | "connected"
+        | "battle_updated"
+        | "battle_list_updated"
+        | "dice_rolled"
+        | "ping";
     clientId?: string;
     battleId?: string;
     battleState?: any;
@@ -138,8 +143,6 @@ export function useSSE(options: UseSSEOptions) {
     ]);
 
     const disconnect = useCallback(() => {
-        console.log("🔌 Disconnecting SSE");
-
         if (reconnectTimeoutRef.current) {
             clearTimeout(reconnectTimeoutRef.current);
             reconnectTimeoutRef.current = null;
@@ -154,14 +157,6 @@ export function useSSE(options: UseSSEOptions) {
         onDisconnect?.();
     }, [onDisconnect]);
 
-    console.log("Connect, disconnect", connect, disconnect);
-    console.log(
-        "Have they changed?",
-        (window as any).lastConnect !== connect,
-        (window as any).lastDisconnect !== disconnect,
-    );
-    (window as any).lastConnect = connect;
-    (window as any).lastDisconnect = disconnect;
     // Connect on mount or when URL changes
     useEffect(() => {
         connect();
@@ -174,7 +169,6 @@ export function useSSE(options: UseSSEOptions) {
         mountedRef.current = true;
 
         return () => {
-            console.log("UNMOUNTING SSE hook");
             mountedRef.current = false;
             disconnect();
         };
